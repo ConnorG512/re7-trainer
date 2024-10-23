@@ -1,24 +1,42 @@
 const std = @import("std");
 
-pub fn main() !void {
-    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
-    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
+extern "kernel32" fn AllocConsole() BOOL;
 
-    // stdout is for the actual output of your application, for example if you
-    // are implementing gzip, then only the compressed bytes should be sent to
-    // stdout, not any debugging messages.
-    const stdout_file = std.io.getStdOut().writer();
-    var bw = std.io.bufferedWriter(stdout_file);
-    const stdout = bw.writer();
+const DWORD = std.os.windows.DWORD;
+const HINSTANCE = std.os.windows.HINSTANCE;
+const LPVOID = std.os.windows.LPVOID;
+const BOOL = std.os.windows.BOOL;
+const WIN_TRUE = std.os.windows.TRUE;
+const WIN_FALSE = std.os.windows.FALSE;
 
-    try stdout.print("Run `zig build test` to run the tests.\n", .{});
+pub export fn DllMain(_: ?HINSTANCE, fdwReason: DWORD, _: ?LPVOID) BOOL {
+    switch (fdwReason) {
+        1 => { // DLL_PROCESS_ATTACH
+            _ = AllocConsole();
+            std.debug.print("DLL_PROCESS_ATTACH\n", .{});
+            std.debug.print("DLL Attached to the attached to the current process correctly...\n\n", .{});
 
-    try bw.flush(); // don't forget to flush!
-}
+            return WIN_TRUE;
+        },
+        2 => { // DLL_THREAD_ATTACH
+            std.debug.print("DLL_THREAD_ATTACH\n", .{});
+            
 
-test "simple test" {
-    var list = std.ArrayList(i32).init(std.testing.allocator);
-    defer list.deinit(); // try commenting this out and see if zig detects the memory leak!
-    try list.append(42);
-    try std.testing.expectEqual(@as(i32, 42), list.pop());
+            return WIN_TRUE;
+        },
+        3 => { // DLL_THREAD_DETACH
+            std.debug.print("DLL_THREAD_DETACH\n", .{});
+
+            return WIN_TRUE;
+        },
+        0 => { // DLL_PROCESS_DETACH
+            std.debug.print("DLL_PROCESS_DETACH\n", .{});
+
+            return WIN_TRUE;
+        },
+        else => { // CATCH ALL
+            return WIN_FALSE;
+        }
+    }
+
 }
