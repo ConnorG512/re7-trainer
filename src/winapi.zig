@@ -1,12 +1,5 @@
 const std = @import("std");
 
-// BOOL VirtualProtect(
-//   [in]  LPVOID lpAddress,
-//   [in]  SIZE_T dwSize,
-//   [in]  DWORD  flNewProtect,
-//   [out] PDWORD lpflOldProtect
-// );
-
 pub extern "kernel32" fn VirtualProtect(lpAddress: LPVOID, dwSize: SIZE_T, flNewProtect: DWORD, lpflOldProtect: *DWORD) BOOL;
 pub extern "kernel32" fn AllocConsole() BOOL;
 
