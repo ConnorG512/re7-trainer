@@ -4,9 +4,10 @@ const cheatTemplate = struct {
     addressToPatch: *u64,      // Pointer to a unsigned 64 bit address
     originalBytes: []const u8, // Slices of any sice 
     newBytes: []const u8,      // Slices of any sice 
+    prevProtectionValue: u8,
 
-    fn writeBytes() void {
-        winapi.VirtualProtect(lpAddress: LPVOID, dwSize: SIZE_T, flNewProtect: DWORD, lpflOldProtect: *DWORD)
+    fn writeBytes(self: cheatTemplate) void {
+        winapi.VirtualProtect(self.addressToPatch, 4, 0x40, self.prevProtectionValue);
     }
 };
 

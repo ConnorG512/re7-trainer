@@ -1,5 +1,6 @@
 const std = @import("std");
 const winapi = @import("winapi.zig");
+const cheat = @import("cheat.zig");
 
 pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.LPVOID) winapi.BOOL {
     switch (fdwReason) {
