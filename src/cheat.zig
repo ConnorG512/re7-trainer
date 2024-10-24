@@ -6,12 +6,12 @@ const cheatTemplate = struct {
     newBytes: []const u8,      // Slices of any sice 
     prevProtectionValue: u8,
 
-    fn writeBytes(self: cheatTemplate) void {
+    pub fn writeBytes(self: cheatTemplate) void {
         winapi.VirtualProtect(self.addressToPatch, 4, 0x40, self.prevProtectionValue);
     }
 };
 
-const infiniteScrap = cheatTemplate {
+pub const infiniteScrap = cheatTemplate {
     .addressToPatch = 0x141d80664,
     .originalBytes = .{0x48,0x8b,0x5e,0x58},
     .newBytes = .{0x90,0x90,0x90,0x90},
