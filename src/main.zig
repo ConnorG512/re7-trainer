@@ -8,7 +8,7 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
             _ = winapi.AllocConsole();
             std.debug.print("DLL_PROCESS_ATTACH\n", .{});
             std.debug.print("DLL Attached to the attached to the current process correctly...\n\n", .{});
-            
+            cheat.infiniteScrap.writeBytes();
 
             return winapi.WIN_TRUE;
         },
