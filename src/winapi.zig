@@ -2,6 +2,7 @@ const std = @import("std");
 
 // Extern functions
 pub extern "kernel32" fn VirtualProtect(lpAddress: LPVOID, dwSize: SIZE_T, flNewProtect: DWORD, lpflOldProtect: *DWORD) BOOL;
+// https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualprotect
 pub extern "kernel32" fn AllocConsole() BOOL;
 
 // Windows Value types
