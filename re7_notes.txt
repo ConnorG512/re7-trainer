@@ -1,0 +1,26 @@
+reading a dereferenced value from a register (integer):
+print *(int*)($REGISTER + OFFSET)
+
+setting a value at a dereferenced pointer (integer):
+set *(int*)($REGISTER + OFFSET) = Value
+
+x/x $REGISTER - dereference the pointer and show the value at the pointed address
+
+Resident Evil 7
+Triggered when making a purchase in the gear shop
+Info for address: 0x0000000141d80664
+0x141d80664:	mov    0x58(%rsi),%rbx
+0x141d80664:	0x48	0x8b	0x5e	0x58 // 4 bytes
+r15 = current player gear. Changing value at r15 will change the amount of gear the player has.
+
+it seems that gear maybe being reduced at instructions:
+0x141d80670:	sub    ebp,DWORD PTR [rsi+0x6c]
+At this address the value stored at rsi+0x06 is the amount of gear that the player has before the player made the purchase. ebp stores the amount after which is then subbed to make the price of the item. That price is then stored in ebp.
+The value at "0x6c(%rsi)" was the amount that I had picked up in game
+
+0x141d80673:	mov    DWORD PTR [rsi+0x6c],r15d
+on this instruction, setting r15d register will change the amount of gear after the purchase.
+using "set $r15d = 999999999999" caused an integer overflow to - meaning that the check for max is bypassed here
+
+When a shot is fired:
+At the address: 0x141945ff5:	mov    (%rax),%eax, the value behind the pointer of rax is the current ammo for the gun
