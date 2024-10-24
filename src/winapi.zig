@@ -1,8 +1,10 @@
 const std = @import("std");
 
+// Extern functions
 pub extern "kernel32" fn VirtualProtect(lpAddress: LPVOID, dwSize: SIZE_T, flNewProtect: DWORD, lpflOldProtect: *DWORD) BOOL;
 pub extern "kernel32" fn AllocConsole() BOOL;
 
+// Windows Value types
 pub const DWORD = std.os.windows.DWORD;
 pub const HINSTANCE = std.os.windows.HINSTANCE;
 pub const LPVOID = std.os.windows.LPVOID;
