@@ -11,8 +11,9 @@ const cheatTemplate = struct {
         self.byteProtection(baseAddress);
     }
 
-    fn writeBytes(_: cheatTemplate, _:u64) void {
-        
+    fn writeBytes(self: cheatTemplate, baseAddress:u64) void {
+        const pointerToAddress: u64 = baseAddress + self.offsetToPatch;
+        @memset(@as(*u64, @intFromPtr(pointerToAddress)), self.newBytes);
     }
 
     fn byteProtection(self: cheatTemplate, baseAddress: u64) void {
