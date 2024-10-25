@@ -9,6 +9,7 @@ const cheatTemplate = struct {
 
     pub fn startInjection(self: cheatTemplate, baseAddress: u64) void {
         self.byteProtection(baseAddress);
+        writeBytes(baseAddress);
     }
 
     fn writeBytes(self: cheatTemplate, baseAddress:u64) void {
