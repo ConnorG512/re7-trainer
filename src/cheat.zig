@@ -21,14 +21,18 @@ const cheatTemplate = struct {
 
         std.debug.print("Base address: {x}\n", .{baseAddress});
         std.debug.print("Relative Instruction: {x}\n", .{self.addressToPatch});
-        std.debug.print("Added together: {x}\n\n", .{calculatedAddress});
+        std.debug.print("Base address + offset: {x}\n", .{calculatedAddress});
 
         const VirtProtResult = winapi.VirtualProtect(@ptrFromInt(calculatedAddress), 4, 0x40, @constCast(&self.prevProtectionValue));
-        const GLE: winapi.DWORD = winapi.GetLastError();
-
+        
         if (VirtProtResult  == 0) {
-            std.debug.print("ERROR: VirtualProtect Failed!\n", .{});
+            const GLE: winapi.DWORD = winapi.GetLastError();
+            std.debug.print("ERROR: VirtualProtect Failed! {d}\n", .{VirtProtResult});
             std.debug.print("ERROR: GetLastError = {d}", .{GLE});
+        }
+        else {
+            std.debug.print("INFO: VirtualProtect VirtProtResult: {d}\n", .{VirtProtResult});
+            std.debug.print("INFO: VirtualProtect prevProtectionValue: {x}\n", .{self.prevProtectionValue});
         }
     }
 };
