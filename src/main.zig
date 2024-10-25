@@ -6,13 +6,10 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
     switch (fdwReason) {
         1 => { // DLL_PROCESS_ATTACH
             _ = winapi.AllocConsole();
-            // Calculating the base address of re7.exe
-            const targetName = winapi.GetModuleHandleA("re7.exe");
-            const baseAddress: u64 = @intFromPtr(targetName);
+            const baseAddress = calculateBaseAddress();
 
-            std.debug.print("DLL_PROCESS_ATTACH\n", .{});
-            std.debug.print("DLL Attached to the attached to the current process correctly...\n\n", .{});
-            cheat.infiniteScrap.writeBytes(baseAddress);
+            // Inject
+            cheat.infiniteScrap.startInjection(baseAddress);
 
             return winapi.WIN_TRUE;
         },
@@ -35,5 +32,8 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
             return winapi.WIN_FALSE;
         }
     }
+}
 
+ fn calculateBaseAddress() u64 {
+    return @intFromPtr(winapi.GetModuleHandleA("re7.exe"));
 }
