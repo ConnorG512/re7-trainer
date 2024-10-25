@@ -14,6 +14,8 @@ pub extern "kernel32" fn GetLastError() DWORD;
 pub extern "kernel32" fn GetModuleHandleA(lpModuleName: LPCSTR) HMODULE;
 // https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulehandlea
 
+pub extern "kernel32" fn WriteProcessMemory(hProcess: HANDLE, lpBaseAddress: LPVOID, lpBuffer: LPCVOID, nSize: SIZE_T, lpNumberOfBytesWritten: SIZE_T) BOOL;
+// https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-writeprocessmemory
 
 // Windows Value types
 pub const DWORD = std.os.windows.DWORD;
@@ -23,5 +25,9 @@ pub const BOOL = std.os.windows.BOOL;
 pub const SIZE_T = std.os.windows.SIZE_T;
 pub const HMODULE = std.os.windows.HMODULE;
 pub const LPCSTR = std.os.windows.LPCSTR;
+pub const HANDLE = std.os.windows.HANDLE;
+pub const LPVOID = std.os.windows.LPVOID;
+pub const LPCVOID = std.os.windows.LPCVOID;
+pub const SIZE_T = std.os.windows.SIZE_T;
 pub const WIN_TRUE = std.os.windows.TRUE;
 pub const WIN_FALSE = std.os.windows.FALSE;
