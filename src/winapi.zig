@@ -6,6 +6,7 @@ pub extern "kernel32" fn VirtualProtect(lpAddress: LPVOID, dwSize: SIZE_T, flNew
 // https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualprotect
 
 pub extern "kernel32" fn AllocConsole() BOOL;
+// https://learn.microsoft.com/en-us/windows/console/allocconsole
 
 pub extern "kernel32" fn GetLastError() DWORD;
 // https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror
