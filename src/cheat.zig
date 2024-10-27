@@ -9,12 +9,11 @@ const cheatTemplate = struct {
 
     pub fn startInjection(self: cheatTemplate, baseAddress: u64) void {
         self.byteProtection(baseAddress);
-        writeBytes(baseAddress);
     }
 
     fn writeBytes(self: cheatTemplate, baseAddress:u64) void {
         const pointerToAddress: u64 = baseAddress + self.offsetToPatch;
-        @memset(@as(*u64, @intFromPtr(pointerToAddress)), self.newBytes);
+        @memset(@as(*u64, @ptrFromInt(pointerToAddress)), &self.newBytes);
     }
 
     fn byteProtection(self: cheatTemplate, baseAddress: u64) void {
@@ -40,7 +39,7 @@ const cheatTemplate = struct {
 };
 
 pub var infiniteScrap = cheatTemplate {
-    .offsetToPatch = 0x0000000001d80664,
+    .offsetToPatch = 0x0000000001d80673,
     .originalBytes = &[_]u8 {0x48,0x8b,0x5e,0x58},
     .newBytes = &[_]u8 {0x90,0x90,0x90,0x90},
     .prevProtectionValue = 0,
