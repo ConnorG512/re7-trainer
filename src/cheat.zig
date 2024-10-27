@@ -40,7 +40,7 @@ const cheatTemplate = struct {
 
 pub var infiniteScrap = cheatTemplate {
     .offsetToPatch = 0x0000000001d80673,
-    .originalBytes = &[_]u8 {0x48,0x8b,0x5e,0x58},
+    .originalBytes = &[_]u8 {0x44,0x89,0x7E,0x6C},
     .newBytes = &[_]u8 {0x90,0x90,0x90,0x90},
     .prevProtectionValue = 0,
 };
