@@ -54,7 +54,7 @@ const cheatTemplate = struct {
         const ptrToAddress: *[4]u8 = @ptrFromInt(baseAddress + self.offsetToPatch);
         var ptrSlice: [4]u8 = ptrToAddress.*;
         std.debug.print("ptrSlice = {x}\n", .{ptrSlice});
-        std.debug.print("ptrSlice = {p}\n\n", .{ptrSlice});
+        std.debug.print("ptrSlice Address = {x}\n\n", .{&ptrSlice});
 
         for (self.newBytes) |index| {
             ptrSlice[index] = self.newBytes[index];
