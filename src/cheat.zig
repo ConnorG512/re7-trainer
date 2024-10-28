@@ -52,11 +52,10 @@ const cheatTemplate = struct {
     fn writeBytes(self: cheatTemplate, baseAddress:u64) void {
         // Setting the integer value as a pointer to a space in memory and then getting the 4 bytes at that memory address.
         const ptrToAddress: *[4]u8 = @ptrFromInt(baseAddress + self.offsetToPatch);
-        const ptrSlice: []u8 = ptrToAddress[0..];
+        var ptrSlice: [4]u8 = ptrToAddress.*;
 
-        for (0..4) |index| {
-            const byte = ptrSlice[index];
-            std.debug.print("Byte: {x}, Index: {d}\n", .{byte, index});
+        for (self.newBytes) |index| {
+            ptrSlice[index] = self.newBytes[index];
         }
     }
 };
