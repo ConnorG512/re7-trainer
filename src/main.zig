@@ -9,7 +9,7 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
             const baseAddress = calculateBaseAddress();
 
             // Inject
-            cheat.infiniteScrap.startInjection(baseAddress);
+            try cheat.infiniteScrap.startInjection(baseAddress);
 
             return winapi.WIN_TRUE;
         },

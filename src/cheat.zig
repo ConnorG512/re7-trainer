@@ -7,18 +7,35 @@ const cheatTemplate = struct {
     newBytes: []const u8,      // Slices of any size
     prevProtectionValue: u32, 
 
-    pub fn startInjection(self: cheatTemplate, baseAddress: u64) void {
+    const cheatError = error {
+        bytesNotValidLength,
+    };
+
+    pub fn startInjection(self: cheatTemplate, baseAddress: u64) !void {
+        const byte_check: bool = byteLengnthValidation();
+        if (byte_check == false) {
+            return error.bytesNotValidLength;
+        } 
+        
         self.byteProtection(baseAddress);
         self.writeBytes(baseAddress);
     }
 
-    fn writeBytes(self: cheatTemplate, baseAddress:u64) void {
-        // Setting the integer value as a pointer to a space in memory and then getting the 4 bytes at that memory address.
-        const ptrToAddress: *[4]u8 = @ptrFromInt(baseAddress + self.offsetToPatch);
-        const ptrSlice: []u8 = ptrToAddress[0..];
-        for (0..4) |index| {
-            const byte = ptrSlice[index];
-            std.debug.print("Byte: {x}, Index: {d}\n", .{byte, index});
+    // Validation check to ensure that the bytes that are being exchanged are of the same length
+    // returns true if the byte arrays are of the same length
+    fn byteLengnthValidation (self: cheatTemplate) bool {
+        const original_bytes_num: u64 = self.originalBytes.len;
+        const new_bytes_num: u64 = self.newBytes.len;
+
+        std.debug.print("INFO: length of original bytes = {d}\n", .{original_bytes_num});
+        std.debug.print("INFO: length of new bytes = {d}\n", .{new_bytes_num});
+
+        if (new_bytes_num == original_bytes_num) {
+            std.debug.print("INFO: Length Validation check passed!\n", .{});
+            return true;
+        } else {
+            std.debug.print("Validation check not passed! Bytes are not of the same length!\n", .{});
+            return false;
         }
     }
 
@@ -40,6 +57,17 @@ const cheatTemplate = struct {
         else {
             std.debug.print("INFO: VirtualProtect VirtProtResult: {d}\n", .{VirtProtResult});
             std.debug.print("INFO: VirtualProtect prevProtectionValue: {x}\n", .{self.prevProtectionValue});
+        }
+    }
+
+    fn writeBytes(self: cheatTemplate, baseAddress:u64) void {
+        // Setting the integer value as a pointer to a space in memory and then getting the 4 bytes at that memory address.
+        const ptrToAddress: *[8]u8 = @ptrFromInt(baseAddress + self.offsetToPatch);
+        const ptrSlice: []u8 = ptrToAddress[0..];
+
+        for (0..8) |index| {
+            const byte = ptrSlice[index];
+            std.debug.print("Byte: {x}, Index: {d}\n", .{byte, index});
         }
     }
 };
