@@ -13,9 +13,13 @@ const cheatTemplate = struct {
     }
 
     fn writeBytes(self: cheatTemplate, baseAddress:u64) void {
-        const pointer_result: []u8 = baseAddress + self.offsetToPatch [0..baseAddress.len];
-        std.mem.copyForwards(u8, pointer_result, self.newBytes);
-        std.debug.print("INFO: writeBytes - Patched bytes at {x} with {d}\n", .{pointer_result, self.offsetToPatch});
+        // Setting the integer value as a pointer to a space in memory and then getting the 4 bytes at that memory address.
+        const ptrToAddress: *[4]u8 = @ptrFromInt(baseAddress + self.offsetToPatch);
+        const ptrSlice: []u8 = ptrToAddress[0..];
+        for (0..4) |index| {
+            const byte = ptrSlice[index];
+            std.debug.print("Byte: {x}, Index: {d}\n", .{byte, index});
+        }
     }
 
     fn byteProtection(self: cheatTemplate, baseAddress: u64) void {
@@ -42,7 +46,7 @@ const cheatTemplate = struct {
 
 pub var infiniteScrap = cheatTemplate {
     .offsetToPatch = 0x0000000001d80673,
-    .originalBytes = [_]u8 {0x44,0x89,0x7E,0x6C},
-    .newBytes = [_]u8 {0x90,0x90,0x90,0x90},
+    .originalBytes = &[_]u8 {0x44,0x89,0x7E,0x6C},
+    .newBytes = &[_]u8 {0x90,0x90,0x90,0x90},
     .prevProtectionValue = 0,
 };
