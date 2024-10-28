@@ -22,7 +22,7 @@ const cheatTemplate = struct {
         std.debug.print("INFO: length of new bytes = {d}\n", .{new_bytes_num});
 
         if (new_bytes_num == original_bytes_num) {
-            std.debug.print("INFO: Length Validation check passed!\n", .{});
+            std.debug.print("INFO: Length Validation check passed!\n\n", .{});
         } else {
             std.debug.print("Validation check not passed! Bytes are not of the same length!\n", .{});
         }
@@ -45,7 +45,7 @@ const cheatTemplate = struct {
         }
         else {
             std.debug.print("INFO: VirtualProtect VirtProtResult: {d}\n", .{VirtProtResult});
-            std.debug.print("INFO: VirtualProtect prevProtectionValue: {x}\n", .{self.prevProtectionValue});
+            std.debug.print("INFO: VirtualProtect prevProtectionValue: {x}\n\n", .{self.prevProtectionValue});
         }
     }
 
