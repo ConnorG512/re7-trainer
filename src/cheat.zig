@@ -14,7 +14,6 @@ const cheatTemplate = struct {
     }
 
     // Validation check to ensure that the bytes that are being exchanged are of the same length
-    // returns true if the byte arrays are of the same length
     fn byteLengnthValidation (self: cheatTemplate) void {
         const original_bytes_num: u64 = self.originalBytes.len;
         const new_bytes_num: u64 = self.newBytes.len;
