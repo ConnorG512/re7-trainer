@@ -7,23 +7,15 @@ const cheatTemplate = struct {
     newBytes: []const u8,      // Slices of any size
     prevProtectionValue: u32, 
 
-    const cheatError = error {
-        bytesNotValidLength,
-    };
-
     pub fn startInjection(self: cheatTemplate, baseAddress: u64) !void {
-        const byte_check: bool = byteLengnthValidation();
-        if (byte_check == false) {
-            return error.bytesNotValidLength;
-        } 
-        
+        self.byteLengnthValidation();
         self.byteProtection(baseAddress);
         self.writeBytes(baseAddress);
     }
 
     // Validation check to ensure that the bytes that are being exchanged are of the same length
     // returns true if the byte arrays are of the same length
-    fn byteLengnthValidation (self: cheatTemplate) bool {
+    fn byteLengnthValidation (self: cheatTemplate) void {
         const original_bytes_num: u64 = self.originalBytes.len;
         const new_bytes_num: u64 = self.newBytes.len;
 
@@ -62,10 +54,10 @@ const cheatTemplate = struct {
 
     fn writeBytes(self: cheatTemplate, baseAddress:u64) void {
         // Setting the integer value as a pointer to a space in memory and then getting the 4 bytes at that memory address.
-        const ptrToAddress: *[8]u8 = @ptrFromInt(baseAddress + self.offsetToPatch);
+        const ptrToAddress: *[4]u8 = @ptrFromInt(baseAddress + self.offsetToPatch);
         const ptrSlice: []u8 = ptrToAddress[0..];
 
-        for (0..8) |index| {
+        for (0..4) |index| {
             const byte = ptrSlice[index];
             std.debug.print("Byte: {x}, Index: {d}\n", .{byte, index});
         }

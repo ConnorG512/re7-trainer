@@ -9,7 +9,7 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
             const baseAddress = calculateBaseAddress();
 
             // Inject
-            try cheat.infiniteScrap.startInjection(baseAddress);
+            startInjectionProcess(baseAddress);
 
             return winapi.WIN_TRUE;
         },
@@ -37,3 +37,7 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
  fn calculateBaseAddress() u64 {
     return @intFromPtr(winapi.GetModuleHandleA("re7.exe"));
 }
+
+fn startInjectionProcess(baseAddress: u64) !void {
+    cheat.infiniteScrap.startInjection(baseAddress);
+} 
