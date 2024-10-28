@@ -41,7 +41,7 @@ const cheatTemplate = struct {
         if (VirtProtResult  == 0) {
             const GLE: winapi.DWORD = winapi.GetLastError();
             std.debug.print("ERROR: VirtualProtect Failed! {d}\n", .{VirtProtResult});
-            std.debug.print("ERROR: GetLastError = {d}", .{GLE});
+            std.debug.print("ERROR: GetLastError = {d}\n\n", .{GLE});
         }
         else {
             std.debug.print("INFO: VirtualProtect VirtProtResult: {d}\n", .{VirtProtResult});
@@ -53,6 +53,8 @@ const cheatTemplate = struct {
         // Setting the integer value as a pointer to a space in memory and then getting the 4 bytes at that memory address.
         const ptrToAddress: *[4]u8 = @ptrFromInt(baseAddress + self.offsetToPatch);
         var ptrSlice: [4]u8 = ptrToAddress.*;
+        std.debug.print("ptrSlice = {x}\n", .{ptrSlice});
+        std.debug.print("ptrSlice = {p}\n\n", .{ptrSlice});
 
         for (self.newBytes) |index| {
             ptrSlice[index] = self.newBytes[index];
