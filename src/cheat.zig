@@ -7,7 +7,7 @@ const cheatTemplate = struct {
     newBytes: []const u8,      // Slices of any size
     prevProtectionValue: u32, 
 
-    pub fn startInjection(self: cheatTemplate, baseAddress: u64) !void {
+    pub fn startInjection(self: cheatTemplate, baseAddress: u64) void {
         self.byteLengnthValidation();
         self.byteProtection(baseAddress);
         self.writeBytes(baseAddress);

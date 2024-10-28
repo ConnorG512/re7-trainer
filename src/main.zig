@@ -38,6 +38,6 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
     return @intFromPtr(winapi.GetModuleHandleA("re7.exe"));
 }
 
-fn startInjectionProcess(baseAddress: u64) !void {
+fn startInjectionProcess(baseAddress: u64) void {
     cheat.infiniteScrap.startInjection(baseAddress);
 } 
