@@ -24,10 +24,8 @@ const cheatTemplate = struct {
 
         if (new_bytes_num == original_bytes_num) {
             std.debug.print("INFO: Length Validation check passed!\n", .{});
-            return true;
         } else {
             std.debug.print("Validation check not passed! Bytes are not of the same length!\n", .{});
-            return false;
         }
     }
 
