@@ -6,10 +6,8 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
     switch (fdwReason) {
         1 => { // DLL_PROCESS_ATTACH
             _ = winapi.AllocConsole();
-            const baseAddress = calculateBaseAddress();
-
             // Inject
-            startInjectionProcess(baseAddress);
+            startInjectionProcess();
 
             return winapi.WIN_TRUE;
         },
@@ -34,10 +32,6 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
     }
 }
 
-fn calculateBaseAddress() u64 {
-    return @intFromPtr(winapi.GetModuleHandleA("re7.exe"));
-}
-
-fn startInjectionProcess(baseAddress: u64) void {
-    cheat.infiniteScrap.startInjection(baseAddress);
+fn startInjectionProcess() void {
+    cheat.infiniteScrap.startInjection();
 } 
