@@ -19,13 +19,13 @@ pub const CheatTemplate = struct {
 
     fn storeBaseAddress (self: *CheatTemplate) void {
         const result = @intFromPtr(winapi.GetModuleHandleA("re7.exe"));
-        std.debug.print("Base Address: {X}", .{result});
+        std.debug.print("Base Address: {X}\n", .{result});
         self.*.baseAddress = result;
     }
 
     fn allocateVirtualMemory(self: *CheatTemplate) void {
         self.*.virtualAllocateAddress = @intFromPtr(winapi.VirtualAlloc(null, 20, 0x00001000, 0x40));
-        std.debug.print("Virtual Memory allocated at address: {X}", .{self.*.virtualAllocateAddress});
+        std.debug.print("Virtual Memory allocated at address: {X}\n", .{self.*.virtualAllocateAddress});
     }
 
     // Validation check to ensure that the bytes that are being exchanged are of the same length
