@@ -8,9 +8,6 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
             _ = winapi.AllocConsole();
             const baseAddress = calculateBaseAddress();
 
-            // Allocate Memory
-            _ = allocateMemory();
-
             // Inject
             startInjectionProcess(baseAddress);
 
@@ -44,8 +41,3 @@ fn calculateBaseAddress() u64 {
 fn startInjectionProcess(baseAddress: u64) void {
     cheat.infiniteScrap.startInjection(baseAddress);
 } 
-
-fn allocateMemory () winapi.LPVOID {
-    const memory_location = winapi.VirtualAlloc(null, null, 0x00001000, 0x40)
-    std.debug.print("INFO: Virtual Alloc memory located at: {p}", .{memory_location});
-}

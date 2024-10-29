@@ -3,6 +3,7 @@ const std = @import("std");
 
 const cheatTemplate = struct {
     offsetToPatch: u64, // Pointer to a unsigned 64 bit address
+    virtualAllocateAddress: u64,
     originalBytes: []const u8, // Slices of any size
     newBytes: []const u8, // Slices of any size
     prevProtectionValue: u32,
@@ -10,6 +11,7 @@ const cheatTemplate = struct {
     pub fn startInjection(self: cheatTemplate, baseAddress: u64) void {
         self.byteLengnthValidation();
         self.byteProtection(baseAddress);
+        self.allocateVirtualMemory();
         self.writeBytes(baseAddress);
     }
 
@@ -48,6 +50,12 @@ const cheatTemplate = struct {
         }
     }
 
+    fn allocateVirtualMemory(self: cheatTemplate) void {
+        const ptr = winapi.VirtualAlloc(null, 20, 0x00001000, 0x40);
+        self.virtualAllocateAddress = @intFromPtr(ptr);
+        std.debug.print("Virtual Memory allocated at address: {X}", .{self.virtualAllocateAddress});
+    }
+
     fn writeBytes(self: cheatTemplate, baseAddress: u64) void {
         // Setting the integer value as a pointer to a space in memory and then getting the 4 bytes at that memory address.
         const ptrToAddress: *[4]u8 = @ptrFromInt(baseAddress + self.offsetToPatch);
@@ -61,6 +69,7 @@ const cheatTemplate = struct {
 
 pub var infiniteScrap = cheatTemplate{
     .offsetToPatch = 0x0000000001d80673,
+    .virtualAllocateAddress = 0,
     .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C },
     .newBytes = &[_]u8{ 0x44, 0x01, 0x7E, 0x6C },
     .prevProtectionValue = 0,
