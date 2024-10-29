@@ -43,6 +43,7 @@ pub const CheatTemplate = struct {
     fn writeBytes(self: *CheatTemplate) void {
         // Setting the integer value as a pointer to a space in memory and then getting the 4 bytes at that memory address.
         const ptrToAddress: *[4]u8 = @ptrFromInt(self.*.baseAddress + self.*.offsetToPatch);
+        const ptrToVirtAllocMem: *[10]u8 = @ptrFromInt(self.*.virtualAllocateAddress);
 
         std.log.info("Offset to patch = {X}\n", .{self.*.offsetToPatch});
         std.log.info("Base Address + offset = {X}\n", .{self.*.baseAddress + self.*.offsetToPatch});
@@ -51,7 +52,7 @@ pub const CheatTemplate = struct {
         // Storing the bytes of memory in the VirtualAlloc Memory
         std.log.debug("Length of self.*.newBytes.len : {d}\n\n", .{self.*.newBytes.len});
 
-        const ptrToVirtAllocMem: *[10]u8 = @ptrFromInt(self.*.virtualAllocateAddress);
+        
         var index: usize = 0;
         for (self.*.newBytes) |byte| {
             ptrToVirtAllocMem[index] = byte;
@@ -81,5 +82,4 @@ pub var infiniteScrap = CheatTemplate{
     .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C },                                // Original bytes for if the bytes need to be reverted 
     .initJmpInstruction = &[_]u8{0x50, 0x90, 0x90, 0x90},                                               // Bytes that will replace the original code to perform the jump instruction
     .newBytes = &[_]u8{0xC7, 0x46, 0x6C, 0x9F, 0x86, 0x01, 0x00, 0x48, 0x85, 0xDB},   // New code to modify the executable state
-    
 };
