@@ -63,6 +63,13 @@ pub const CheatTemplate = struct {
         ptrToAddress[1] = self.newBytes[1];
         ptrToAddress[2] = self.newBytes[2];
         ptrToAddress[3] = self.newBytes[3];
+
+        // Storing the bytes of memory in the VirtualAlloc Memory
+        const ptrToVirtAllocMem: *[4]u8 = @ptrFromInt(self.*.virtualAllocateAddress);
+        ptrToVirtAllocMem[0] = self.*.newBytes[0];
+        ptrToVirtAllocMem[1] = self.*.newBytes[1];
+        ptrToVirtAllocMem[2] = self.*.newBytes[2];
+        ptrToVirtAllocMem[3] = self.*.newBytes[3];
     }
 };
 
