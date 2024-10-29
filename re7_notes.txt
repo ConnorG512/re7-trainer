@@ -7,20 +7,21 @@ set *(int*)($REGISTER + OFFSET) = Value
 x/x $REGISTER - dereference the pointer and show the value at the pointed address
 
 Resident Evil 7
-Triggered when making a purchase in the gear shop
-Info for address: 0x0000000141d80664
-0x141d80664:	mov    0x58(%rsi),%rbx
-0x141d80664:	0x48	0x8b	0x5e	0x58 // 4 bytes
-r15 = current player gear. Changing value at r15 will change the amount of gear the player has.
-
-it seems that gear maybe being reduced at instructions:
-0x141d80670:	sub    ebp,DWORD PTR [rsi+0x6c]
-At this address the value stored at rsi+0x06 is the amount of gear that the player has before the player made the purchase. ebp stores the amount after which is then subbed to make the price of the item. That price is then stored in ebp.
-The value at "0x6c(%rsi)" was the amount that I had picked up in game
-
 0x141d80673:	mov    DWORD PTR [rsi+0x6c],r15d
 on this instruction, setting r15d register will change the amount of gear after the purchase.
 using "set $r15d = 999999999999" caused an integer overflow to - meaning that the check for max is bypassed here
 
+// Snapshot
+re7.exe+1D80673 - 44 89 7E 6C           - mov [rsi+6C],r15d
+re7.exe+1D80677 - 48 85 DB              - test rbx,rbx
+re7.exe+1D8067A - 74 49                 - je re7.exe+1D806C5
+// Snapshot
+
 When a shot is fired:
-At the address: 0x141945ff5:	mov    (%rax),%eax, the value behind the pointer of rax is the current ammo for the gun
+setting the value of eax on instruction "1945FF7" will change the current ammo value.
+
+// Snapshot
+re7.exe+1945FF7 - 89 43 14              - mov [rbx+14],eax
+re7.exe+1945FFA - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+re7.exe+1945FFF - 48 8B 74 24 40        - mov rsi,[rsp+40]
+// Snapshot

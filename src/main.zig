@@ -34,7 +34,7 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
     }
 }
 
- fn calculateBaseAddress() u64 {
+fn calculateBaseAddress() u64 {
     return @intFromPtr(winapi.GetModuleHandleA("re7.exe"));
 }
 
