@@ -81,6 +81,6 @@ pub var infiniteScrap = CheatTemplate{
     .prevProtectionValue = 0x0,
     .virtualAllocateAddress = 0x0,
     .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C },                                // Original bytes for if the bytes need to be reverted 
-    .initJmpInstruction = &[_]u8{0x50, 0x90, 0x90, 0x90},                             // Bytes that will replace the original code to perform the jump instruction
+    .initJmpInstruction = &[_]u8{0x44, 0x01, 0x7E, 0x6C},                             // Bytes that will replace the original code to perform the jump instruction
     .newBytes = &[_]u8{0xC7, 0x46, 0x6C, 0x9F, 0x86, 0x01, 0x00, 0x48, 0x85, 0xDB},   // New code to modify the executable state
 };
