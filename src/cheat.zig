@@ -18,9 +18,8 @@ pub const CheatTemplate = struct {
     }
 
     fn storeBaseAddress (self: *CheatTemplate) void {
-        const result = @intFromPtr(winapi.GetModuleHandleA("re7.exe"));
-        std.debug.print("Base Address: {X}\n", .{result});
-        self.*.baseAddress = result;
+        self.*.baseAddress = @intFromPtr(winapi.GetModuleHandleA("re7.exe"));
+        std.debug.print("Base Address: {X}\n", .{self.*.baseAddress});
     }
 
     fn allocateVirtualMemory(self: *CheatTemplate) void {
@@ -43,9 +42,9 @@ pub const CheatTemplate = struct {
         }
     }
 
-    fn byteProtection(self: CheatTemplate) void {
-        const calculatedAddress = self.baseAddress + self.offsetToPatch;
-        const VirtProtResult = winapi.VirtualProtect(@ptrFromInt(calculatedAddress), 4, 0x40, @constCast(&self.prevProtectionValue));
+    fn byteProtection(self: *CheatTemplate) void {
+        const calculatedAddress = self.*.baseAddress + self.*.offsetToPatch;
+        const VirtProtResult = winapi.VirtualProtect(@ptrFromInt(calculatedAddress), 4, 0x40, @constCast(&self.*.prevProtectionValue));
 
         if (VirtProtResult == 0) {
             const GLE: winapi.DWORD = winapi.GetLastError();
@@ -56,9 +55,9 @@ pub const CheatTemplate = struct {
         }
     }
 
-    fn writeBytes(self: CheatTemplate) void {
+    fn writeBytes(self: *CheatTemplate) void {
         // Setting the integer value as a pointer to a space in memory and then getting the 4 bytes at that memory address.
-        const ptrToAddress: *[4]u8 = @ptrFromInt(self.baseAddress + self.offsetToPatch);
+        const ptrToAddress: *[4]u8 = @ptrFromInt(self.*.baseAddress + self.*.offsetToPatch);
         std.debug.print("{X}\n", .{ptrToAddress});
         ptrToAddress[0] = self.newBytes[0];
         ptrToAddress[1] = self.newBytes[1];
