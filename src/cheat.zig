@@ -36,7 +36,7 @@ pub const CheatTemplate = struct {
             std.log.err("VirtualProtect Failed! {d}\n", .{VirtProtResult});
             std.log.err("GetLastError = {d}\n\n", .{GLE});
         } else {
-            std.log.debug("VirtualProtect VirtProtResult: {d}\n\n", .{VirtProtResult});
+            std.log.debug("VirtualProtect VirtProtResult: {X}\n\n", .{VirtProtResult});
         }
     }
 
@@ -47,6 +47,7 @@ pub const CheatTemplate = struct {
         std.log.info("Offset to patch = {X}\n", .{self.*.offsetToPatch});
         std.log.info("Base Address + offset = {X}\n", .{self.*.baseAddress + self.*.offsetToPatch});
         std.log.info("Combines base + offet = {X}\n\n", .{ptrToAddress});
+        
 
         ptrToAddress[0] = self.*.initJmpInstruction[0];
         ptrToAddress[1] = self.*.initJmpInstruction[1];
