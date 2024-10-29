@@ -47,13 +47,7 @@ pub const CheatTemplate = struct {
         std.log.info("Offset to patch = {X}\n", .{self.*.offsetToPatch});
         std.log.info("Base Address + offset = {X}\n", .{self.*.baseAddress + self.*.offsetToPatch});
         std.log.info("Combines base + offet = {X}\n\n", .{ptrToAddress});
-        
-
-        ptrToAddress[0] = self.*.initJmpInstruction[0];
-        ptrToAddress[1] = self.*.initJmpInstruction[1];
-        ptrToAddress[2] = self.*.initJmpInstruction[2];
-        ptrToAddress[3] = self.*.initJmpInstruction[3];
-
+    
         // Storing the bytes of memory in the VirtualAlloc Memory
         std.log.debug("Length of self.*.newBytes.len : {d}\n\n", .{self.*.newBytes.len});
 
@@ -61,6 +55,15 @@ pub const CheatTemplate = struct {
         var index: usize = 0;
         for (self.*.newBytes) |byte| {
             ptrToVirtAllocMem[index] = byte;
+            index += 1;
+            std.log.debug("{X}", .{byte});
+        }
+        
+        index = 0; // Ensuring the clearing of index before starting
+
+        // Writing bytes to the location on init jump instruction
+        for (self.*.initJmpInstruction) |byte| {
+            ptrToAddress[index] = byte;
             index += 1;
             std.log.debug("{X}", .{byte});
         }
@@ -76,7 +79,7 @@ pub var infiniteScrap = CheatTemplate{
     .prevProtectionValue = 0x0,
     .virtualAllocateAddress = 0x0,
     .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C },                                // Original bytes for if the bytes need to be reverted 
-    .initJmpInstruction = &[_]u8{0x44, 0x01, 0x7E, 0x6C},                             // Bytes that will replace the original code to perform the jump instruction
+    .initJmpInstruction = &[_]u8{0x50, 0x90, 0x90, 0x90},                                               // Bytes that will replace the original code to perform the jump instruction
     .newBytes = &[_]u8{0xC7, 0x46, 0x6C, 0x9F, 0x86, 0x01, 0x00, 0x48, 0x85, 0xDB},   // New code to modify the executable state
     
 };
