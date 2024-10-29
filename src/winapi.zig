@@ -18,6 +18,9 @@ pub extern "kernel32" fn GetModuleHandleA(lpModuleName: LPCSTR) HMODULE;
 pub extern "kernel32" fn WriteProcessMemory(hProcess: HANDLE, lpBaseAddress: LPVOID, lpBuffer: LPCVOID, nSize: SIZE_T, lpNumberOfBytesWritten: SIZE_T) BOOL;
 // https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-writeprocessmemory
 
+pub extern "kernel32" fn VirtualAlloc(dwSize: SIZE_T, flAllocationType: DWORD, flProtect: DWORD) LPVOID;
+// https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualalloc
+
 // Windows Value types
 pub const DWORD = std.os.windows.DWORD;
 pub const HINSTANCE = std.os.windows.HINSTANCE;
