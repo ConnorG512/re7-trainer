@@ -23,8 +23,35 @@ pub const CheatTemplate = struct {
     }
 
     fn allocateVirtualMemory(self: *CheatTemplate) void {
-        self.*.virtualAllocateAddress = @intFromPtr(winapi.VirtualAlloc(null, 20, 0x00001000, 0x40));
-        std.log.debug("Virtual Memory allocated at address: {X}\n", .{self.*.virtualAllocateAddress});
+        // We need to call the VirtualAlloc function in offsets of 4096 bytes and check to see if the memory can be allocated at that location
+        // Virtual Alloc will return a base address if successful, will return NULL if failed
+        // Max range of a signed 32 bit int is: -2147483648 to 2147483647
+
+        const initial_instruction_location: u64 = self.*.baseAddress + self.*.offsetToPatch;
+        var allocation_jump_distance: u64 = 4096 * 2;
+        var virtual_alloc_result: ?winapi.LPCVOID = null;
+
+        while (virtual_alloc_result == null and allocation_jump_distance < 2000000000) {
+            const current_memory_location: u64 = initial_instruction_location + allocation_jump_distance;
+
+            virtual_alloc_result = winapi.VirtualAlloc(@ptrFromInt(current_memory_location), 15, 0x00002000,0x40);
+
+            if (virtual_alloc_result != null) {
+                // Run if VirtualAlloc succeeds in finding an address
+                std.log.info("Virtual Alloc address created successfully at address {?}, offset from instruction by {d}/{X}\n", .{virtual_alloc_result, allocation_jump_distance, allocation_jump_distance});
+                self.*.virtualAllocateAddress = @intFromPtr(virtual_alloc_result);
+                return;
+            }
+
+            // Adding an extra jump distance on for next loop
+            const ptr_allocation_jump_distance: *u64 = &allocation_jump_distance;
+            ptr_allocation_jump_distance.* += ptr_allocation_jump_distance.*; // Add with its self
+            std.log.debug("Virtual Alloc Failed! Retrying at offset {d}/{X} from address {X}\n", .{allocation_jump_distance, allocation_jump_distance, current_memory_location});
+            std.log.debug("Get Last Error: {d}\n\n", .{winapi.GetLastError()});
+        }
+
+        self.*.virtualAllocateAddress = @intFromPtr(winapi.VirtualAlloc(null, 15, 0x00001000, 0x40));
+        std.log.info("Failed to find a suitable address for validation stored at address: {X}\n\n", .{self.*.virtualAllocateAddress});
     }
 
     fn byteProtection(self: *CheatTemplate) void {
@@ -43,25 +70,25 @@ pub const CheatTemplate = struct {
     fn writeBytes(self: *CheatTemplate) void {
         // Setting the integer value as a pointer to a space in memory and then getting the 4 bytes at that memory address.
         const ptrToAddress: *[4]u8 = @ptrFromInt(self.*.baseAddress + self.*.offsetToPatch);
-        const ptrToVirtAllocMem: *[10]u8 = @ptrFromInt(self.*.virtualAllocateAddress);
+        // const ptrToVirtAllocMem: *[10]u8 = @ptrFromInt(self.*.virtualAllocateAddress);
 
         std.log.info("Offset to patch = {X}\n", .{self.*.offsetToPatch});
         std.log.info("Base Address + offset = {X}\n", .{self.*.baseAddress + self.*.offsetToPatch});
         std.log.info("Combines base + offet = {X}\n\n", .{ptrToAddress});
+        std.log.info("VirtAlloc memory address {X}\n", .{self.*.virtualAllocateAddress});
     
         // Storing the bytes of memory in the VirtualAlloc Memory
         std.log.debug("Length of self.*.newBytes.len : {d}\n\n", .{self.*.newBytes.len});
 
         
         var index: usize = 0;
-        for (self.*.newBytes) |byte| {
-            ptrToVirtAllocMem[index] = byte;
-            index += 1;
-            std.log.debug("{X}", .{byte});
-        }
-        index = 0; // Resetting index value
+        // for (self.*.newBytes) |byte| {
+        //     ptrToVirtAllocMem[index] = byte;
+        //     index += 1;
+        //     std.log.debug("{X}", .{byte});
+        // }
+        // index = 0; // Resetting index value
         
-
         // Writing bytes to the location on init jump instruction
         for (self.*.initJmpInstruction) |byte| {
             ptrToAddress[index] = byte;
