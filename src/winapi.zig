@@ -33,3 +33,6 @@ pub const HANDLE = std.os.windows.HANDLE;
 pub const LPCVOID = std.os.windows.LPCVOID;
 pub const WIN_TRUE = std.os.windows.TRUE;
 pub const WIN_FALSE = std.os.windows.FALSE;
+pub const PAGE_EXECUTE_READWRITE = std.os.windows.PAGE_EXECUTE_READWRITE;
+pub const MEM_COMMIT = std.os.windows.MEM_COMMIT;
+pub const MEM_RESERVE = std.os.windows.MEM_RESERVE;
