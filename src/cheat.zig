@@ -41,6 +41,7 @@ pub const CheatTemplate = struct {
             if (virtual_alloc_result != null) {
                 // Run if VirtualAlloc succeeds in finding an address
                 std.log.info("Virtual Alloc address created successfully at address {?}, offset from instruction by {d}/{X}\n", .{virtual_alloc_result, allocation_jump_distance, allocation_jump_distance});
+                
                 // Commit the memory to Virtual Alloc
                 self.*.virtualAllocateAddress = @intFromPtr(winapi.VirtualAlloc(@constCast(virtual_alloc_result), self.*.virtualAllocateByteSize, winapi.MEM_COMMIT, winapi.PAGE_EXECUTE_READWRITE));
                 std.log.info("Attempted commit allocation at address {?}, byte size {d}, allocation type {X}, flprotect {X}. Returned value {d}", .{virtual_alloc_result, self.*.virtualAllocateByteSize, 0x00001000, 0x40, self.*.virtualAllocateAddress});
