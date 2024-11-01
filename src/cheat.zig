@@ -100,10 +100,21 @@ pub const CheatTemplate = struct {
             index += 1;
         }
 
+        // Writing the bytes to the address
+        const custom_code_bytes: []u8 = @constCast(self.*.newBytes);
+        const ptr_custom_instruction: *[18]u8 = @ptrFromInt(custom_code_to_jump_to);
+        index = 0;
+        
+        for (custom_code_bytes) |byte| {
+            ptr_custom_instruction[index] = byte;
+            index += 1;
+        } 
+
         // Debug printing 
         std.log.info("Base instruction: {X}\n", .{self.*.baseAddress});
         std.log.info("Current instruction: {X}\n", .{current_instruction});
         std.log.info("Custom code to jump to: {X}\n", .{custom_code_to_jump_to});
+        std.log.info("custom_code_bytes: {X}\n", .{custom_code_bytes});
     }
 };
 
@@ -115,8 +126,8 @@ pub var infiniteScrap = CheatTemplate{
     .offsetToPatch = 0x0000000001d80673,
     .prevProtectionValue = 0x0,
     .virtualAllocateAddress = 0x0,
-    .virtualAllocateByteSize = 15,
-    .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C },                                // Original bytes for if the bytes need to be reverted 
+    .virtualAllocateByteSize = 18,
+    .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C },                          // Original bytes for if the bytes need to be reverted 
     .newBytes = &[_]u8{0xC7, 0x46, 0x6C, 0x9F, 0x86, 0x01, 0x00, 0x85, 0xDB},   // New code to modify the executable state ending with an e9 jump to add the address on the end
     .returnDistanceFromBase = 7,
 };
