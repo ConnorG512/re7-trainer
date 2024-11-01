@@ -7,9 +7,9 @@ pub const CheatTemplate = struct {
     virtualAllocateAddress: u64,
     virtualAllocateByteSize: winapi.SIZE_T,
     originalBytes: []const u8,  // Slices of any size
-    initJmpInstruction: []const u8,
     newBytes: []const u8,       // Slices of any size
     prevProtectionValue: u32,
+    returnDistanceFromBase: u8,
 
     pub fn startInjection(self: *CheatTemplate) void {
         self.*.storeBaseAddress();
@@ -72,34 +72,38 @@ pub const CheatTemplate = struct {
     }
 
     fn writeBytes(self: *CheatTemplate) void {
-        // Setting the integer value as a pointer to a space in memory and then getting the 4 bytes at that memory address.
-        const ptrToAddress: *[4]u8 = @ptrFromInt(self.*.baseAddress + self.*.offsetToPatch);
-        const ptrToVirtAllocMem: *[10]u8 = @ptrFromInt(self.*.virtualAllocateAddress);
+        // Write the jump instruction to the place in memory we want to hook.
+        const current_instruction = self.*.baseAddress + self.*.offsetToPatch;
 
-        std.log.info("Offset to patch = {X}\n", .{self.*.offsetToPatch});
-        std.log.info("Base Address + offset = {X}\n", .{self.*.baseAddress + self.*.offsetToPatch});
-        std.log.info("Combines base + offet = {X}\n\n", .{ptrToAddress});
-        std.log.info("VirtAlloc memory address {X}\n", .{self.*.virtualAllocateAddress});
-    
-        // Storing the bytes of memory in the VirtualAlloc Memory
-        std.log.debug("Length of self.*.newBytes.len : {d}\n\n", .{self.*.newBytes.len});
+        // We need to calculate the instruction after the original jmp instruction in order to perform a relative jmp.
+        const address_after_instruction = current_instruction + 5;
 
+        // Getting the custom code address to jump to.
+        const custom_code_to_jump_to = self.*.virtualAllocateAddress;
+
+        // Relative offset to jump to:
+        const relative_offset: i32 = @intCast(custom_code_to_jump_to - address_after_instruction);
         
-        var index: usize = 0;
-        for (self.*.newBytes) |byte| {
-            ptrToVirtAllocMem[index] = byte;
+        // Setting up the array for the initial jump instruction
+        var initial_jump_instruction: [5]u8 = undefined;
+        initial_jump_instruction[0] = 0xE9;
+        initial_jump_instruction[1] = @intCast(relative_offset & 0xFF);
+        initial_jump_instruction[2] = @intCast((relative_offset >> 8) & 0xFF);
+        initial_jump_instruction[3] = @intCast((relative_offset >> 16) & 0xFF);
+        initial_jump_instruction[4] = @intCast((relative_offset >> 24) & 0xFF);
+
+        // Writing the initial jump instruction bytes to memory.
+        const ptr_current_instruction: *[5]u8 = @ptrFromInt(current_instruction);
+        var index: u8 = 0;
+        for (initial_jump_instruction) |byte| {
+            ptr_current_instruction[index] = byte;
             index += 1;
-            std.log.debug("{X}", .{byte});
         }
-        index = 0; // Resetting index value
-        
-        // Writing bytes to the location on init jump instruction
-        for (self.*.initJmpInstruction) |byte| {
-            ptrToAddress[index] = byte;
-            index += 1;
-            std.log.debug("{X}", .{byte});
-        }
-        index = 0; // Resetting index value
+
+        // Debug printing 
+        std.log.info("Base instruction: {X}\n", .{self.*.baseAddress});
+        std.log.info("Current instruction: {X}\n", .{current_instruction});
+        std.log.info("Custom code to jump to: {X}\n", .{custom_code_to_jump_to});
     }
 };
 
@@ -113,6 +117,6 @@ pub var infiniteScrap = CheatTemplate{
     .virtualAllocateAddress = 0x0,
     .virtualAllocateByteSize = 15,
     .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C },                                // Original bytes for if the bytes need to be reverted 
-    .initJmpInstruction = &[_]u8{0x44, 0x01, 0x7E, 0x6C},                             // Bytes that will replace the original code to perform the jump instruction
-    .newBytes = &[_]u8{0xC7, 0x46, 0x6C, 0x9F, 0x86, 0x01, 0x00, 0x48, 0x85, 0xDB},   // New code to modify the executable state
+    .newBytes = &[_]u8{0xC7, 0x46, 0x6C, 0x9F, 0x86, 0x01, 0x00, 0x85, 0xDB},   // New code to modify the executable state ending with an e9 jump to add the address on the end
+    .returnDistanceFromBase = 7,
 };
