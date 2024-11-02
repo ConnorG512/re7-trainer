@@ -2,12 +2,13 @@ const winapi = @import("winapi.zig");
 const std = @import("std");
 
 pub const CheatTemplate = struct {
-    baseAddress: u64,           // Base address for the application
-    offsetToPatch: u64,         // Pointer to a unsigned 64 bit address
+    baseAddress: u64,                           // Base address for the application
+    offsetToPatch: u64,                         // Pointer to a unsigned 64 bit address
+    offsetToJumpBack: u64,                      // Offset to jump back to from custom code 
     virtualAllocateAddress: u64,
     virtualAllocateByteSize: winapi.SIZE_T,
-    originalBytes: []const u8,  // Slices of any size
-    newBytes: []const u8,       // Slices of any size
+    originalBytes: []const u8,                  // Slices of any size
+    newBytes: []const u8,                       // Slices of any size
     prevProtectionValue: u32,
     returnDistanceFromBase: u8,
 
@@ -75,14 +76,40 @@ pub const CheatTemplate = struct {
     fn writeBytes(self: *CheatTemplate) void {
         var index: u8 = 0;
         // Writing the custom code into memory.
-        // This code with write the custom instruction from self.newbytes into the allocated memory space.
+        // This code with write the custom instruction from self.newbytes into the allocated memory space
         var ptr_custom_code: *[10]u8 = @ptrFromInt(self.*.virtualAllocateAddress);
+                
         for (self.*.newBytes) |byte| {
             ptr_custom_code[index] = byte;
             index += 1;
         }
+        std.log.debug("Index Count: {d}", .{index});
+
+        // Writing the jump back to the original code
+        const address_to_jump_back: u64 = self.*.baseAddress + self.*.offsetToJumpBack;
+        const custom_code_jump_address: u64 = self.*.virtualAllocateAddress + index;
+        const relative_offset: i64 = @bitCast(address_to_jump_back -% custom_code_jump_address + 5);
+        
+
+        var ptr_jump_instruction: *[5]u8 = @ptrFromInt(self.virtualAllocateAddress + index);
+        ptr_jump_instruction[0] = 0xE9;
+        ptr_jump_instruction[1] = @intCast(relative_offset & 0xFF);
+        ptr_jump_instruction[2] = @intCast((relative_offset >> 8) & 0xFF);
+        ptr_jump_instruction[3] = @intCast((relative_offset >> 16) & 0xFF);
+        ptr_jump_instruction[4] = @intCast((relative_offset >> 24) & 0xFF);
         index = 0; // Resetting index after loop
         
+        // Print debug
+        std.log.debug("custom_code_jump_address: {X}\n", .{custom_code_jump_address});
+        std.log.debug("custom_code_jump_address + 5: {X}", .{custom_code_jump_address + 5 });
+        std.log.debug("address_to_jump_back: {X}\n", .{address_to_jump_back});
+        std.log.debug("relative_offset: {X}", .{relative_offset});
+        //std.log.debug("relative_offset: {X}", .{relative_offset});
+
+        // Print info strings
+        std.log.info("Base Address: {X}\n", .{self.*.baseAddress});
+        std.log.info("Offset to patch {X}\n", .{self.*.offsetToPatch});
+        std.log.info("Virtual Alloc Address {X}\n", .{self.*.virtualAllocateAddress});
     }
 };
 
@@ -92,10 +119,11 @@ pub const CheatTemplate = struct {
 pub var infiniteScrap = CheatTemplate{
     .baseAddress = 0x0,
     .offsetToPatch = 0x0000000001d80673,
+    .offsetToJumpBack = 0x1d8067a,
     .prevProtectionValue = 0x0,
     .virtualAllocateAddress = 0x0,
     .virtualAllocateByteSize = 18,
-    .originalBytes = &[_]u8{0x44, 0x89, 0x7E, 0x6C},                            // Original bytes for if the bytes need to be reverted 
-    .newBytes = &[_]u8{0xC7, 0x46, 0x6C, 0x9F, 0x86, 0x01, 0x00, 0x48, 0x85, 0xDB},   // New code to modify the executable state ending with an e9 jump to add the address on the end
+    .originalBytes = &[_]u8{0x44, 0x89, 0x7E, 0x6C},                                  // Original bytes for if the bytes need to be reverted 
+    .newBytes = &[_]u8{0xC7, 0x46, 0x6C, 0x9F, 0x86, 0x01, 0x00, 0x48, 0x85, 0xDB},   // New code to modify the executable state ending with an e9 jump to add the address on the end                    
     .returnDistanceFromBase = 7,
 };
