@@ -45,7 +45,7 @@ pub const CheatTemplate = struct {
                 
                 // Commit the memory to Virtual Alloc
                 self.*.virtualAllocateAddress = @intFromPtr(winapi.VirtualAlloc(@constCast(virtual_alloc_result), self.*.virtualAllocateByteSize, winapi.MEM_COMMIT, winapi.PAGE_EXECUTE_READWRITE));
-                std.log.info("Attempted commit allocation at address {?}, byte size {d}, allocation type {X}, flprotect {X}. Returned value {d}", .{virtual_alloc_result, self.*.virtualAllocateByteSize, 0x00001000, 0x40, self.*.virtualAllocateAddress});
+                std.log.info("Attempted commit allocation at address {?}, byte size {d}, allocation type {X}, flprotect {X}. Returned value {X}", .{virtual_alloc_result, self.*.virtualAllocateByteSize, 0x00001000, 0x40, self.*.virtualAllocateAddress});
                 return;
             }
 
@@ -75,7 +75,33 @@ pub const CheatTemplate = struct {
 
     fn writeBytes(self: *CheatTemplate) void {
         var index: u8 = 0;
+        var ptr_jump_instruction: *[5]u8 = undefined;
+        var address_to_jump_to: u64 = 0x0;
+        var custom_code_jump_address: u64 = 0x0;
+        var relative_offset: i64 = 0x0;
+
         // Writing the custom code into memory.
+
+        // Calculating the jump to the custom code
+        custom_code_jump_address = self.*.baseAddress + self.offsetToPatch;
+        address_to_jump_to = self.*.virtualAllocateAddress;
+        relative_offset = @bitCast(address_to_jump_to - (custom_code_jump_address + 5));
+        
+
+        // Writing the jump to replace the original code
+        ptr_jump_instruction = @ptrFromInt(custom_code_jump_address);
+        ptr_jump_instruction[0] = 0xE9;
+        ptr_jump_instruction[1] = @intCast(relative_offset & 0xFF);
+        ptr_jump_instruction[2] = @intCast((relative_offset >> 8) & 0xFF);
+        ptr_jump_instruction[3] = @intCast((relative_offset >> 16) & 0xFF);
+        ptr_jump_instruction[4] = @intCast((relative_offset >> 24) & 0xFF);
+
+        // Print debug
+        std.log.debug("custom_code_jump_address: {X}\n", .{custom_code_jump_address});
+        std.log.debug("custom_code_jump_address + 5: {X}", .{custom_code_jump_address + 5 });
+        std.log.debug("address_to_jump_to: {X}\n", .{address_to_jump_to});
+        std.log.debug("relative_offset: {X}", .{relative_offset});
+
         // This code with write the custom instruction from self.newbytes into the allocated memory space
         var ptr_custom_code: *[10]u8 = @ptrFromInt(self.*.virtualAllocateAddress);
                 
@@ -86,12 +112,13 @@ pub const CheatTemplate = struct {
         std.log.debug("Index Count: {d}", .{index});
 
         // Writing the jump back to the original code
-        const address_to_jump_back: u64 = self.*.baseAddress + self.*.offsetToJumpBack;
-        const custom_code_jump_address: u64 = self.*.virtualAllocateAddress + index;
-        const relative_offset: i64 = @bitCast(address_to_jump_back -% custom_code_jump_address + 5);
+        address_to_jump_to = self.*.baseAddress + self.*.offsetToJumpBack;
+        custom_code_jump_address = self.*.virtualAllocateAddress + index;
+        relative_offset = @bitCast(address_to_jump_to -% (custom_code_jump_address + 5));
+        
         
 
-        var ptr_jump_instruction: *[5]u8 = @ptrFromInt(self.virtualAllocateAddress + index);
+        ptr_jump_instruction = @ptrFromInt(custom_code_jump_address);
         ptr_jump_instruction[0] = 0xE9;
         ptr_jump_instruction[1] = @intCast(relative_offset & 0xFF);
         ptr_jump_instruction[2] = @intCast((relative_offset >> 8) & 0xFF);
@@ -102,9 +129,8 @@ pub const CheatTemplate = struct {
         // Print debug
         std.log.debug("custom_code_jump_address: {X}\n", .{custom_code_jump_address});
         std.log.debug("custom_code_jump_address + 5: {X}", .{custom_code_jump_address + 5 });
-        std.log.debug("address_to_jump_back: {X}\n", .{address_to_jump_back});
+        std.log.debug("address_to_jump_to: {X}\n", .{address_to_jump_to});
         std.log.debug("relative_offset: {X}", .{relative_offset});
-        //std.log.debug("relative_offset: {X}", .{relative_offset});
 
         // Print info strings
         std.log.info("Base Address: {X}\n", .{self.*.baseAddress});
