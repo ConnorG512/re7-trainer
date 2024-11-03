@@ -7,7 +7,8 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
         1 => { // DLL_PROCESS_ATTACH
             _ = winapi.AllocConsole();
             // Inject
-            startInjectionProcess();
+            cheat.infinite_scrap.startInjection();
+            cheat.infinite_ammo_clip.startInjection();
 
             return winapi.WIN_TRUE;
         },
@@ -32,6 +33,3 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
     }
 }
 
-fn startInjectionProcess() void {
-    cheat.infiniteScrap.startInjection();
-} 
