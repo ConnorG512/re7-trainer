@@ -7,7 +7,7 @@ pub const CheatTemplate = struct {
     offsetToPatch: u64, // Pointer to a unsigned 64 bit address
     offsetToJumpBack: u64, // Offset to jump back to from custom code
     virtualAllocateAddress: u64,
-    virtualAllocateByteSize: winapi.SIZE_T,
+    virtualAllocateByteSize: u8,
     originalBytes: []const u8, // Slices of any size
     newBytes: []const u8, // Slices of any size
     prevProtectionValue: u32,
@@ -26,39 +26,7 @@ pub const CheatTemplate = struct {
     }
 
     fn allocateVirtualMemory(self: *CheatTemplate) void {
-        // We need to call the VirtualAlloc function in offsets of 4096 bytes and check to see if the memory can be allocated at that location
-        // Virtual Alloc will return a base address if successful, will return NULL if failed
-        // Max range of a signed 32 bit int is: -2147483648 to 2147483647
-
-        const initial_instruction_location: u64 = self.*.baseAddress + self.*.offsetToPatch;
-        var allocation_jump_distance: u64 = 4096 * 4;
-        var virtual_alloc_result: ?winapi.LPCVOID = null;
-
-        while (virtual_alloc_result == null and allocation_jump_distance < 2000000000) {
-            const current_memory_location: u64 = initial_instruction_location + allocation_jump_distance;
-
-            // Reserving the address using virtual Alloc
-            virtual_alloc_result = winapi.VirtualAlloc(@ptrFromInt(current_memory_location), self.*.virtualAllocateByteSize, winapi.MEM_RESERVE, winapi.PAGE_EXECUTE_READWRITE);
-
-            if (virtual_alloc_result != null) {
-                // Run if VirtualAlloc succeeds in finding an address
-                std.log.info("Virtual Alloc address created successfully at address {?}, offset from instruction by {d}/{X}\n", .{ virtual_alloc_result, allocation_jump_distance, allocation_jump_distance });
-
-                // Commit the memory to Virtual Alloc
-                self.*.virtualAllocateAddress = @intFromPtr(winapi.VirtualAlloc(@constCast(virtual_alloc_result), self.*.virtualAllocateByteSize, winapi.MEM_COMMIT, winapi.PAGE_EXECUTE_READWRITE));
-                std.log.info("Attempted commit allocation at address {?}, byte size {d}, allocation type {X}, flprotect {X}. Returned value {X}", .{ virtual_alloc_result, self.*.virtualAllocateByteSize, 0x00001000, 0x40, self.*.virtualAllocateAddress });
-                return;
-            }
-
-            // Adding an extra jump distance on for next loop
-            const ptr_allocation_jump_distance: *u64 = &allocation_jump_distance;
-            ptr_allocation_jump_distance.* += 4096 * 4; // Add with its self
-            std.log.debug("Virtual Alloc Failed! Retrying at offset {d}/{X} from address {X}\n", .{ allocation_jump_distance, allocation_jump_distance, current_memory_location });
-            std.log.debug("Get Last Error: {d}\n\n", .{winapi.GetLastError()});
-        }
-
-        self.*.virtualAllocateAddress = @intFromPtr(winapi.VirtualAlloc(null, 15, 0x00001000, 0x40));
-        std.log.info("Failed to find a suitable address for validation stored at address: {X}\n\n", .{self.*.virtualAllocateAddress});
+        self.*.virtualAllocateAddress = mf.VMScanAllocate(self.*.baseAddress + self.*.offsetToPatch, 4096 * 4, self.*.virtualAllocateByteSize);
     }
 
     fn byteProtection(self: *CheatTemplate) void {
