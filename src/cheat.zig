@@ -1,5 +1,6 @@
 const winapi = @import("winapi.zig");
 const std = @import("std");
+const mf = @import("memory_functions.zig");
 
 pub const CheatTemplate = struct {
     baseAddress: u64,                           // Base address for the application
