@@ -1,6 +1,10 @@
 const std = @import("std");
 const winapi = @import("winapi.zig");
 
+const memError = error {
+    outOfAllocRange,
+};
+
 // Write the jump instruction along with the offset to the specified memory address.
 pub fn writeJmpToMemoryAddress(memory_address: *[5]u8, value_to_write: i64) void {
     memory_address[0] = 0xE9; // Relative jmp opcode
@@ -41,7 +45,7 @@ pub fn writeCustomCodeToMemory(memory_address_to_write: u64, custom_bytes: []con
 // Scans for free memory within a 32 bit integer size of the provided address.
 // If memory is found, will reserve that memory and allocate a number of bytes based on the size of the custom code provided.
 // Returns the pointer of the allocated memory casted as a u64 value.
-pub fn VMScanAllocate(initial_memory_address: u64, jump_size: u16, allocation_byte_size: u8) u64 {
+pub fn VMScanAllocate(initial_memory_address: u64, jump_size: u16, allocation_byte_size: u8) !u64 {
     const allocation_jump_size: u32 = 2000000000;
     var virtual_alloc_result: ?winapi.LPVOID = null;
     var allocation_jump_distance: u32 = 0;
@@ -57,7 +61,7 @@ pub fn VMScanAllocate(initial_memory_address: u64, jump_size: u16, allocation_by
 
     if (allocation_jump_distance >= allocation_jump_size) {
         std.log.err("VMScanAllocate: Could not find an address in jumping distance of allocation_jump_size! ", .{});
-        return;
+        return memError.outOfAllocRange;
     }
 
     // Once virtual_alloc_result returns true:
