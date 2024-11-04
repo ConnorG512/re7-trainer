@@ -45,7 +45,7 @@ pub fn writeCustomCodeToMemory(memory_address_to_write: u64, custom_bytes: []con
 // Scans for free memory within a 32 bit integer size of the provided address.
 // If memory is found, will reserve that memory and allocate a number of bytes based on the size of the custom code provided.
 // Returns the pointer of the allocated memory casted as a u64 value.
-pub fn VMScanAllocate(initial_memory_address: u64, jump_size: u16, allocation_byte_size: u8) !u64 {
+pub fn VMScanAllocate(initial_memory_address: u64, jump_size: u16, allocation_byte_size: u8) memError!u64 {
     const allocation_jump_size: u32 = 2000000000;
     var virtual_alloc_result: ?winapi.LPVOID = null;
     var allocation_jump_distance: u32 = 0;
