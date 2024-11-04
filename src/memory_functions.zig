@@ -61,8 +61,8 @@ pub fn VMScanAllocate(initial_memory_address: u64, jump_size: u16, allocation_by
 }
 
 // Call VirtualProtect on a piece of memory and get the result, if failed call GetLastError for debugging.
-pub fn byteProtection (memory_address: u64, previous_protection_value_store: *u32) void {
-    const virtual_protect_result = winapi.VirtualProtect(@ptrFromInt(memory_address), 4, winapi.PAGE_EXECUTE_READWRITE, &previous_protection_value_store);
+pub fn byteProtection (memory_address: u64, previous_protection_value_store: ?*u32) void {
+    const virtual_protect_result: winapi.BOOL = winapi.VirtualProtect(@ptrFromInt(memory_address), 4, winapi.PAGE_EXECUTE_READWRITE, previous_protection_value_store);
 
     if (virtual_protect_result == 0) {
         std.log.err("byteProtection: Failed! get last error = {d}\n", .{winapi.GetLastError()});
