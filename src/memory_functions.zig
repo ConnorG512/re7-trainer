@@ -51,8 +51,7 @@ pub fn VMScanAllocate(initial_memory_address: u64, jump_size: u16, allocation_by
 
         virtual_alloc_result = winapi.VirtualAlloc(@ptrFromInt(address_to_scan), allocation_byte_size, winapi.MEM_RESERVE, winapi.PAGE_EXECUTE_READWRITE);
         ptr_allocation_jump_distance.* += jump_size;
-        //std.log.debug("VMScanAllocate: Virtual Alloc failed! retrying at... {X}\n", .{initial_memory_address + ptr_allocation_jump_distance.*});
-        //std.log.debug("VMScanAllocate: current scan size at {X}/{d}\n", .{ ptr_allocation_jump_distance.*, ptr_allocation_jump_distance.* });
+
     }
 
     // Once virtual_alloc_result returns true:
