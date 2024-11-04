@@ -55,7 +55,7 @@ pub fn VMScanAllocate(initial_memory_address: u64, jump_size: u16, allocation_by
 
     }
 
-    if (allocation_jump_distance == allocation_jump_size) {
+    if (allocation_jump_distance >= allocation_jump_size) {
         std.log.err("VMScanAllocate: Could not find an address in jumping distance of allocation_jump_size! ", .{});
         return;
     }
