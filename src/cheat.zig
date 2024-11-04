@@ -30,16 +30,7 @@ pub const CheatTemplate = struct {
     }
 
     fn byteProtection(self: *CheatTemplate) void {
-        const calculatedAddress = self.*.baseAddress + self.*.offsetToPatch;
-        const VirtProtResult = winapi.VirtualProtect(@ptrFromInt(calculatedAddress), 4, 0x40, @constCast(&self.*.prevProtectionValue));
-
-        if (VirtProtResult == 0) {
-            const GLE: winapi.DWORD = winapi.GetLastError();
-            std.log.err("VirtualProtect Failed! {d}\n", .{VirtProtResult});
-            std.log.err("GetLastError = {d}\n\n", .{GLE});
-        } else {
-            std.log.debug("VirtualProtect VirtProtResult: {d}\n\n", .{VirtProtResult});
-        }
+        mf.byteProtection(self.*.baseAddress + self.*.offsetToPatch, &self.*.prevProtectionValue);
     }
 
     fn writeBytes(self: *CheatTemplate) void {
