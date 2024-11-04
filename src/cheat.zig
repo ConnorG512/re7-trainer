@@ -25,7 +25,11 @@ pub const CheatTemplate = struct {
     }
 
     fn allocateVirtualMemory(self: *CheatTemplate) void {
-        self.*.virtualAllocateAddress = mf.VMScanAllocate(self.*.baseAddress + self.*.offsetToPatch, 4096 * 4, self.*.virtualAllocateByteSize);
+        // Search for allocated address, if failed return catch the error and return.
+        self.*.virtualAllocateAddress = mf.VMScanAllocate(self.*.baseAddress + self.*.offsetToPatch, 4096 * 4, self.*.virtualAllocateByteSize) catch |err| {
+            std.log.err("allocateVirtualMemory: Failed! {}\n", .{err});
+            return;
+        };
     }
 
     fn byteProtection(self: *CheatTemplate) void {
