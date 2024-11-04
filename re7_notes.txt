@@ -25,3 +25,8 @@ re7.exe+1945FF7 - 89 43 14              - mov [rbx+14],eax
 re7.exe+1945FFA - 48 8B 5C 24 30        - mov rbx,[rsp+30]
 re7.exe+1945FFF - 48 8B 74 24 40        - mov rsi,[rsp+40]
 // Snapshot
+
+health instruction: 
+re7.exe+1B815EF - F3 0F11 52 14         - movss [rdx+14],xmm2
+re7.exe+1B815F4 - 66 0F2F C1            - comisd xmm0,xmm1
+re7.exe+1B815F8 - 72 10                 - jb re7.exe+1B8160A

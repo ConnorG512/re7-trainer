@@ -1,6 +1,10 @@
 const std = @import("std");
 const winapi = @import("winapi.zig");
 
+const memError = error {
+    outOfAllocRange,
+};
+
 // Write the jump instruction along with the offset to the specified memory address.
 pub fn writeJmpToMemoryAddress(memory_address: *[5]u8, value_to_write: i64) void {
     memory_address[0] = 0xE9; // Relative jmp opcode
@@ -41,21 +45,38 @@ pub fn writeCustomCodeToMemory(memory_address_to_write: u64, custom_bytes: []con
 // Scans for free memory within a 32 bit integer size of the provided address.
 // If memory is found, will reserve that memory and allocate a number of bytes based on the size of the custom code provided.
 // Returns the pointer of the allocated memory casted as a u64 value.
-pub fn VMScanAllocate(initial_memory_address: u64, jump_size: u16, allocation_byte_size: u8) u64 {
+pub fn VMScanAllocate(initial_memory_address: u64, jump_size: u16, allocation_byte_size: u8) memError!u64 {
+    const allocation_jump_size: u32 = 2000000000;
     var virtual_alloc_result: ?winapi.LPVOID = null;
     var allocation_jump_distance: u32 = 0;
 
-    while (virtual_alloc_result == null and allocation_jump_distance < 2000000000) {
+    while (virtual_alloc_result == null and allocation_jump_distance < allocation_jump_size) {
         const ptr_allocation_jump_distance: *u32 = &allocation_jump_distance;
         const address_to_scan: u64 = initial_memory_address + allocation_jump_distance;
 
         virtual_alloc_result = winapi.VirtualAlloc(@ptrFromInt(address_to_scan), allocation_byte_size, winapi.MEM_RESERVE, winapi.PAGE_EXECUTE_READWRITE);
         ptr_allocation_jump_distance.* += jump_size;
-        //std.log.debug("VMScanAllocate: Virtual Alloc failed! retrying at... {X}\n", .{initial_memory_address + ptr_allocation_jump_distance.*});
-        //std.log.debug("VMScanAllocate: current scan size at {X}/{d}\n", .{ ptr_allocation_jump_distance.*, ptr_allocation_jump_distance.* });
+
+    }
+
+    if (allocation_jump_distance >= allocation_jump_size) {
+        std.log.err("VMScanAllocate: Could not find an address in jumping distance of allocation_jump_size! ", .{});
+        return memError.outOfAllocRange;
     }
 
     // Once virtual_alloc_result returns true:
     std.log.debug("VMScanAllocate: Virtual Alloc success result = {?}\n", .{virtual_alloc_result});
     return @intFromPtr(winapi.VirtualAlloc(virtual_alloc_result, allocation_byte_size, winapi.MEM_COMMIT, winapi.PAGE_EXECUTE_READWRITE));
+}
+
+// Call VirtualProtect on a piece of memory and get the result, if failed call GetLastError for debugging.
+pub fn byteProtection (memory_address: u64, previous_protection_value_store: ?*u32) void {
+    const virtual_protect_result: winapi.BOOL = winapi.VirtualProtect(@ptrFromInt(memory_address), 4, winapi.PAGE_EXECUTE_READWRITE, previous_protection_value_store);
+
+    if (virtual_protect_result == 0) {
+        std.log.err("byteProtection: Failed! get last error = {d}\n", .{winapi.GetLastError()});
+        return;
+    }
+
+    std.log.debug("byteProtection: Success! {d}", .{virtual_protect_result});
 }
