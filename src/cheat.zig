@@ -37,7 +37,9 @@ pub const CheatTemplate = struct {
     }
 
     pub fn writeBytes(self: *CheatTemplate) void {
-        
+        mf.writeAndJump(self.*.virtualAllocateAddress, self.*.baseAddress + self.*.offsetToPatch);
+        // Writing a jump from the custom code back to original code
+        mf.writeAndJump(self.*.baseAddress + self.*.offset_to_jump_back, mf.WriteCodeToMemory(self.*.virtualAllocateAddress, self.*.newBytes));
     }
 
 };
@@ -46,7 +48,7 @@ pub const CheatTemplate = struct {
 // INSTANCE
 ///////////////////////////////////
 pub var infinite_scrap = CheatTemplate{
-    .cheat_title = "INFINITE SCRAP",
+    .cheat_title = "INFINITE SCRAP\n",
     .baseAddress = 0x0,
     .offsetToPatch = 0x0000000001d80673,
     .offset_to_jump_back =  0x1d8067a,
@@ -60,7 +62,7 @@ pub var infinite_scrap = CheatTemplate{
 };
 
 pub var infinite_ammo_clip = CheatTemplate{
-    .cheat_title = "INFINITE AMMO CLIP",
+    .cheat_title = "INFINITE AMMO CLIP\n",
     .baseAddress = 0x0,
     .offsetToPatch = 0x0000000001945FF7,
     .offset_to_jump_back = 0x1945FFF,
@@ -74,7 +76,7 @@ pub var infinite_ammo_clip = CheatTemplate{
 };
 
 pub var infinite_hp = CheatTemplate{
-    .cheat_title = "INFINITE HEALTH",
+    .cheat_title = "INFINITE HEALTH\n",
     .baseAddress = 0x0,
     .offsetToPatch = 0x0000000001B815EF,
     .offset_to_jump_back = 0x1B815F4,
