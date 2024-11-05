@@ -27,6 +27,15 @@ re7.exe+1945FFF - 48 8B 74 24 40        - mov rsi,[rsp+40]
 // Snapshot
 
 health instruction: 
+offset rdx + 14 is the entity current hp
+offset rdx + 10 is the entity max hp
+For the player, offset 0xC8 is 0 while for both tested enemies it is 1, may be useful for comparing them.
 re7.exe+1B815EF - F3 0F11 52 14         - movss [rdx+14],xmm2
 re7.exe+1B815F4 - 66 0F2F C1            - comisd xmm0,xmm1
 re7.exe+1B815F8 - 72 10                 - jb re7.exe+1B8160A
+
+When the scrap generator generates 100 scrap
+edx is the amount of scrap in the machine
+re7.exe+20AF6E8 - 01 93 C8000000        - add [rbx+000000C8],edx
+re7.exe+20AF6EE - 0F57 C0               - xorps xmm0,xmm0
+re7.exe+20AF6F1 - B0 01                 - mov al,01
