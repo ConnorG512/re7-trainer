@@ -35,25 +35,9 @@ pub const CheatTemplate = struct {
     }
 
     pub fn writeBytes(self: *CheatTemplate) void {
-        var index: u8 = 0;
-        var relative_offset: i64 = 0x0;
-
-        // Writing the custom code into memory.
-        // Calculating the jump to the custom code
-        relative_offset = mf.calculateRelativeOffset(self.*.virtualAllocateAddress, self.*.baseAddress + self.*.offsetToPatch);
-        mf.writeJmpToMemoryAddress(@ptrFromInt(self.*.baseAddress + self.offsetToPatch), relative_offset);
-
-        // This code with write the custom instruction from self.newbytes into the allocated memory space
-        index = mf.loopWriteCodeToMemory(self.*.virtualAllocateAddress, self.*.newBytes, null, null);
-
-        // Writing the jump back to the original code
-        relative_offset = mf.calculateRelativeOffset(self.*.baseAddress + self.*.offsetToJumpBack, self.*.virtualAllocateAddress + index);
-        mf.writeJmpToMemoryAddress(@ptrFromInt(self.*.virtualAllocateAddress + index), relative_offset);
+        
     }
 
-    pub fn loopWriteBytes(self: *CheatTemplate) void {
-        std.debug.print("{?}", .{self});
-    }
 };
 
 ///////////////////////////////////
