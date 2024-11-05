@@ -46,6 +46,12 @@ pub const CheatTemplate = struct {
         relative_offset = mf.calculateRelativeOffset(self.*.baseAddress + self.*.offsetToJumpBack, self.*.virtualAllocateAddress + index);
         mf.writeJmpToMemoryAddress(@ptrFromInt(self.*.virtualAllocateAddress + index), relative_offset);
     }
+
+    pub fn doubleWriteBytes(self: *CheatTemplate) void {
+        var index: u8 = 0;
+        var relative_offset: i64 = 0x0;
+
+    }
 };
 
 ///////////////////////////////////
