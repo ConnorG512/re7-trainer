@@ -7,7 +7,9 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
         1 => { // DLL_PROCESS_ATTACH
             _ = winapi.AllocConsole();
             // Inject
+            // infinite scrap
             cheat.infinite_scrap.startInjection();
+            // Infinite ammo clip
             cheat.infinite_ammo_clip.startInjection();
 
             return winapi.WIN_TRUE;
