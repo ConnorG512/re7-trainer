@@ -97,8 +97,7 @@ pub var infinite_hp = CheatTemplate{
                                     0x75, 0x0F,                                 // jne 0x18
                                     0xF3, 0x0F, 0x10, 0x52, 0x10,               // movss xmm2, DWORD PTR [rdx + 0x10]
                                     0xF3, 0x0F, 0x11, 0x52, 0x14,               // movss DWORD PTR [rdx + 0x14], xmm2
-                                    0xE9, 0x57, 0x92, 0x6B, 0xFF,               // jmp 0xffffffffff6b926f !!NOT TO BE USED IN INSTRUCTION!!
+                                    0xFF, 0xFF, 0xFF, 0xFF, 0xFF,               // PLACEHOLDER FOR A JUMP INSTRUCTION !! DO NOT USE !!
                                     0xF3, 0x0F, 0x11, 0x52, 0x14,               // movss DWORD PTR [rdx + 0x14], xmm2
-                                    0xE9, 0x4D, 0x92, 0x6B, 0xFF                // jmp 0xffffffffff6b926f !!NOT TO BE USED IN INSTRUCTION!!
                                     }, // New code to modify the executable state ending with an e9 jump to add the address on the end
 };
