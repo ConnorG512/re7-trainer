@@ -37,7 +37,7 @@ pub const CheatTemplate = struct {
     }
 
     pub fn writeBytes(self: *CheatTemplate) void {
-
+        
     }
 
 };
@@ -51,6 +51,7 @@ pub var infinite_scrap = CheatTemplate{
     .offsetToPatch = 0x0000000001d80673,
     .offsetToJumpBack = 0x1d8067a,
     .prevProtectionValue = 0x0,
+    .relative_offset = 0x0,
     .virtualAllocateAddress = 0x0,
     .virtualAllocateByteSize = 16,
     .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C, 0x48 }, // Original bytes for if the bytes need to be reverted
@@ -64,6 +65,7 @@ pub var infinite_ammo_clip = CheatTemplate{
     .offsetToPatch = 0x0000000001945FF7,
     .offsetToJumpBack = 0x1945FFF,
     .prevProtectionValue = 0x0,
+    .relative_offset = 0x0,
     .virtualAllocateAddress = 0x0,
     .virtualAllocateByteSize = 17,
     .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C, 0x48 }, // Original bytes for if the bytes need to be reverted
