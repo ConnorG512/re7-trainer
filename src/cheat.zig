@@ -89,6 +89,6 @@ pub var infinite_hp = CheatTemplate{
     .virtualAllocateAddress = 0x0,
     .virtualAllocateByteSize = 40,
     .originalBytes = &[_]u8{ 0xF3, 0x0F, 0x11, 0x52, 0x14 }, // Original bytes for if the bytes need to be reverted
-    .newBytes = &[_]u8{}, // New code to modify the executable state ending with an e9 jump to add the address on the end
-    .newBytes2 = &[_]u8{} // Extra array for bytes if a jump needs to be added in between.
+    .newBytes = &[_]u8{0x83, 0xBA, 0xC8, 0x00, 0x00, 0x00, 0x00, 0x75, 0x0F, 0xF3, 0x0F, 0x10, 0x52, 0x10, 0xF3, 0x0F, 0x11, 0x52, 0x14}, // New code to modify the executable state ending with an e9 jump to add the address on the end
+    .newBytes2 = &[_]u8{0xF3, 0x0F, 0x11, 0x52, 0x14} // Extra array for bytes if a jump needs to be added in between.
 };
