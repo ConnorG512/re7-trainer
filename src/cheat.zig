@@ -13,6 +13,10 @@ pub const CheatTemplate = struct {
     newBytes2: []const u8,
     prevProtectionValue: u32,
 
+    pub fn printInfo(self: *CheatTemplate) void {
+
+    }
+
     pub fn storeBaseAddress(self: *CheatTemplate) void {
         self.*.baseAddress = @intFromPtr(winapi.GetModuleHandleA("re7.exe"));
         std.debug.print("Base Address: {X}\n", .{self.*.baseAddress});
@@ -57,7 +61,6 @@ pub const CheatTemplate = struct {
         // Write the first set of bytes to the virtual alloc address. Store the index.
         index = mf.writeCustomCodeToMemory(self.*.virtualAllocateAddress, self.*.newBytes);
         relative_offset = mf.calculateRelativeOffset(self.*.baseAddress + self.*.offsetToJumpBack, self.*.virtualAllocateAddress + index);
-        
         // Adding five to the index to cover the jmp as we need to write more bytes after.
         index + 5;
         mf.writeCustomCodeToMemory(@ptrFromInt(self.*.baseAddress + self.*.offsetToPatch + index), self.*.newBytes2);
