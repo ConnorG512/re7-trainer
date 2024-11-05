@@ -53,7 +53,7 @@ pub const CheatTemplate = struct {
     }
 
     pub fn loopWriteBytes(self: *CheatTemplate) void {
-        
+        std.debug.print("{?}", .{self});
     }
 };
 
