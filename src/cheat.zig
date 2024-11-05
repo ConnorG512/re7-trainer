@@ -70,7 +70,6 @@ pub var infinite_scrap = CheatTemplate{
     .virtualAllocateByteSize = 16,
     .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C, 0x48 }, // Original bytes for if the bytes need to be reverted
     .newBytes = &[_]u8{ 0xC7, 0x46, 0x6C, 0x9F, 0x86, 0x01, 0x00, 0x48, 0x85, 0xDB }, // New code to modify the executable state ending with an e9 jump to add the address on the end
-    .newBytes2 = &[_]u8{ 0x00 } // Extra array for bytes if a jump needs to be added in between.
 };
 
 pub var infinite_ammo_clip = CheatTemplate{
@@ -83,7 +82,6 @@ pub var infinite_ammo_clip = CheatTemplate{
     .virtualAllocateByteSize = 17,
     .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C, 0x48 }, // Original bytes for if the bytes need to be reverted
     .newBytes = &[_]u8{ 0x66, 0xc7, 0x43, 0x14, 0x63, 0x00, 0x48, 0x8B, 0x5C, 0x24, 0x30 }, // New code to modify the executable state ending with an e9 jump to add the address on the end
-    .newBytes2 = &[_]u8{ 0x00 } // Extra array for bytes if a jump needs to be added in between.
 };
 
 pub var infinite_hp = CheatTemplate{
@@ -95,6 +93,12 @@ pub var infinite_hp = CheatTemplate{
     .virtualAllocateAddress = 0x0,
     .virtualAllocateByteSize = 40,
     .originalBytes = &[_]u8{ 0xF3, 0x0F, 0x11, 0x52, 0x14 }, // Original bytes for if the bytes need to be reverted
-    .newBytes = &[_]u8{ 0x83, 0xBA, 0xC8, 0x00, 0x00, 0x00, 0x00, 0x75, 0x0F, 0xF3, 0x0F, 0x10, 0x52, 0x10, 0xF3, 0x0F, 0x11, 0x52, 0x14 }, // New code to modify the executable state ending with an e9 jump to add the address on the end
-    .newBytes2 = &[_]u8{ 0xF3, 0x0F, 0x11, 0x52, 0x14 } // Extra array for bytes if a jump needs to be added in between.
+    .newBytes = &[_]u8{ 0x83, 0xBA, 0xC8, 0x00, 0x00, 0x00, 0x00,   // cmp DWORD PTR [rdx + 0xc8], 0
+                                    0x75, 0x0F,                                 // jne 0x18
+                                    0xF3, 0x0F, 0x10, 0x52, 0x10,               // movss xmm2, DWORD PTR [rdx + 0x10]
+                                    0xF3, 0x0F, 0x11, 0x52, 0x14,               // movss DWORD PTR [rdx + 0x14], xmm2
+                                    0xE9, 0x57, 0x92, 0x6B, 0xFF,               // jmp 0xffffffffff6b926f !!NOT TO BE USED IN INSTRUCTION!!
+                                    0xF3, 0x0F, 0x11, 0x52, 0x14,               // movss DWORD PTR [rdx + 0x14], xmm2
+                                    0xE9, 0x4D, 0x92, 0x6B, 0xFF                // jmp 0xffffffffff6b926f !!NOT TO BE USED IN INSTRUCTION!!
+                                    }, // New code to modify the executable state ending with an e9 jump to add the address on the end
 };
