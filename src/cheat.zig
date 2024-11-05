@@ -12,13 +12,6 @@ pub const CheatTemplate = struct {
     newBytes: []const u8, // Slices of any size
     prevProtectionValue: u32,
 
-    pub fn startInjection(self: *CheatTemplate) void {
-        self.*.storeBaseAddress();
-        self.*.allocateVirtualMemory();
-        self.*.byteProtection();
-        self.*.writeBytes();
-    }
-
     pub fn storeBaseAddress(self: *CheatTemplate) void {
         self.*.baseAddress = @intFromPtr(winapi.GetModuleHandleA("re7.exe"));
         std.debug.print("Base Address: {X}\n", .{self.*.baseAddress});
