@@ -19,12 +19,12 @@ pub const CheatTemplate = struct {
         self.*.writeBytes();
     }
 
-    fn storeBaseAddress(self: *CheatTemplate) void {
+    pub fn storeBaseAddress(self: *CheatTemplate) void {
         self.*.baseAddress = @intFromPtr(winapi.GetModuleHandleA("re7.exe"));
         std.debug.print("Base Address: {X}\n", .{self.*.baseAddress});
     }
 
-    fn allocateVirtualMemory(self: *CheatTemplate) void {
+    pub fn allocateVirtualMemory(self: *CheatTemplate) void {
         // Search for allocated address, if failed return catch the error and return.
         self.*.virtualAllocateAddress = mf.VMScanAllocate(self.*.baseAddress + self.*.offsetToPatch, 4096 * 4, self.*.virtualAllocateByteSize) catch |err| {
             std.log.err("allocateVirtualMemory: Failed! {}\n", .{err});
@@ -32,11 +32,11 @@ pub const CheatTemplate = struct {
         };
     }
 
-    fn byteProtection(self: *CheatTemplate) void {
+    pub fn byteProtection(self: *CheatTemplate) void {
         mf.byteProtection(self.*.baseAddress + self.*.offsetToPatch, &self.*.prevProtectionValue);
     }
 
-    fn writeBytes(self: *CheatTemplate) void {
+    pub fn writeBytes(self: *CheatTemplate) void {
         var index: u8 = 0;
         var relative_offset: i64 = 0x0;
 
