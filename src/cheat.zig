@@ -12,7 +12,7 @@ pub const CheatTemplate = struct {
     virtualAllocateByteSize: u8,
     originalBytes: []const u8, // Slices of any size
     newBytes: []const u8, // Slices of any size
-    index_to_write_jmp: ?u8,
+    newBytes2: []const u8, // Slices of any size
     prevProtectionValue: u32,
 
     pub fn printInfo(self: *CheatTemplate) void {
@@ -42,6 +42,20 @@ pub const CheatTemplate = struct {
         mf.writeAndJump(self.*.baseAddress + self.*.offset_to_jump_back, mf.WriteCodeToMemory(self.*.virtualAllocateAddress, self.*.newBytes));
     }
 
+    // Only used when an instruction that makes use of both new_bytes and new_bytes_2 and a jump inbetween the code is required.
+    pub fn doubleWriteBytes(self: *CheatTemplate) void {
+        var offset_to_place_jump: u64 = 0x0;
+
+        // Write a jump from the base offset of the instruction to the allocated address    
+        mf.writeAndJump(self.*.virtualAllocateAddress, self.*.baseAddress + self.*.offsetToPatch);
+        offset_to_place_jump = mf.WriteCodeToMemory(self.*.virtualAllocateAddress, self.*.newBytes);
+
+        mf.writeAndJump(self.*.baseAddress + self.offset_to_jump_back, offset_to_place_jump);
+        offset_to_place_jump = mf.WriteCodeToMemory(offset_to_place_jump + 5, self.*.newBytes2);
+
+        mf.writeAndJump(self.*.baseAddress + self.offset_to_jump_back, offset_to_place_jump);
+    }
+
 };
 
 ///////////////////////////////////
@@ -58,7 +72,7 @@ pub var infinite_scrap = CheatTemplate{
     .virtualAllocateByteSize = 16,
     .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C, 0x48 }, // Original bytes for if the bytes need to be reverted
     .newBytes = &[_]u8{ 0xC7, 0x46, 0x6C, 0x9F, 0x86, 0x01, 0x00, 0x48, 0x85, 0xDB }, // New code to modify the executable state ending with an e9 jump to add the address on the end
-    .index_to_write_jmp = null
+    .newBytes2 = &[_]u8{0x00},
 };
 
 pub var infinite_ammo_clip = CheatTemplate{
@@ -72,7 +86,7 @@ pub var infinite_ammo_clip = CheatTemplate{
     .virtualAllocateByteSize = 17,
     .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C, 0x48 }, // Original bytes for if the bytes need to be reverted
     .newBytes = &[_]u8{ 0x66, 0xc7, 0x43, 0x14, 0x63, 0x00, 0x48, 0x8B, 0x5C, 0x24, 0x30 }, // New code to modify the executable state ending with an e9 jump to add the address on the end
-    .index_to_write_jmp = null
+    .newBytes2 = &[_]u8{0x00},
 };
 
 pub var infinite_hp = CheatTemplate{
@@ -84,13 +98,11 @@ pub var infinite_hp = CheatTemplate{
     .relative_offset = 0x0,
     .virtualAllocateAddress = 0x0,
     .virtualAllocateByteSize = 40,
-    .originalBytes = &[_]u8{ 0xF3, 0x0F, 0x11, 0x52, 0x14 }, // Original bytes for if the bytes need to be reverted
+    .originalBytes = &[_]u8{ 0xF3, 0x0F, 0x11, 0x52, 0x14 },        // Original bytes for if the bytes need to be reverted
     .newBytes = &[_]u8{ 0x83, 0xBA, 0xC8, 0x00, 0x00, 0x00, 0x00,   // cmp DWORD PTR [rdx + 0xc8], 0
                                     0x75, 0x0F,                                 // jne 0x18
                                     0xF3, 0x0F, 0x10, 0x52, 0x10,               // movss xmm2, DWORD PTR [rdx + 0x10]
                                     0xF3, 0x0F, 0x11, 0x52, 0x14,               // movss DWORD PTR [rdx + 0x14], xmm2
-                                    0xFF, 0xFF, 0xFF, 0xFF, 0xFF,               // PLACEHOLDER FOR A JUMP INSTRUCTION !! DO NOT USE !!
-                                    0xF3, 0x0F, 0x11, 0x52, 0x14,               // movss DWORD PTR [rdx + 0x14], xmm2
-                                    }, // New code to modify the executable state ending with an e9 jump to add the address on the end
-    .index_to_write_jmp = 19
+                                    },                                          // New code to modify the executable state ending with an e9 jump to add the address on the end
+    .newBytes2 = &[_]u8 {0xF3, 0x0F, 0x11, 0x52, 0x14}              // movss DWORD PTR [rdx + 0x14], xmm2
 };
