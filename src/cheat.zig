@@ -7,6 +7,7 @@ pub const CheatTemplate = struct {
     baseAddress: u64, // Base address for the application
     offsetToPatch: u64, // Pointer to a unsigned 64 bit address
     offsetToJumpBack: u64, // Offset to jump back to from custom code
+    relative_offset: i64, // Calculation of a relative offset 
     virtualAllocateAddress: u64,
     virtualAllocateByteSize: u8,
     originalBytes: []const u8, // Slices of any size
@@ -76,6 +77,7 @@ pub var infinite_hp = CheatTemplate{
     .offsetToPatch = 0x0000000001B815EF,
     .offsetToJumpBack = 0x1B815F4,
     .prevProtectionValue = 0x0,
+    .relative_offset = 0x0,
     .virtualAllocateAddress = 0x0,
     .virtualAllocateByteSize = 40,
     .originalBytes = &[_]u8{ 0xF3, 0x0F, 0x11, 0x52, 0x14 }, // Original bytes for if the bytes need to be reverted
