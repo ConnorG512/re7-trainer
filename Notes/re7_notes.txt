@@ -34,6 +34,17 @@ re7.exe+1B815EF - F3 0F11 52 14         - movss [rdx+14],xmm2
 re7.exe+1B815F4 - 66 0F2F C1            - comisd xmm0,xmm1
 re7.exe+1B815F8 - 72 10                 - jb re7.exe+1B8160A
 
+/// Custom god mode assembly ///
+re7.exe+24C8385 - 83 BA C8000000 00     - cmp dword ptr [rdx+000000C8],00 { 0 is player, enemy 1}
+re7.exe+24C838C - 75 0F                 - jne re7.exe+24C839D
+re7.exe+24C838E - F3 0F10 52 10         - movss xmm2,[rdx+10]
+re7.exe+24C8393 - F3 0F11 52 14         - movss [rdx+14],xmm2
+re7.exe+24C8398 - E9 57926BFF           - jmp re7.exe+1B815F4
+re7.exe+24C839D - F3 0F11 52 14         - movss [rdx+14],xmm2
+re7.exe+24C83A2 - E9 4D926BFF           - jmp re7.exe+1B815F4
+/// Custom god mode assembly ///
+
+
 When the scrap generator generates 100 scrap
 edx is the amount of scrap in the machine
 re7.exe+20AF6E8 - 01 93 C8000000        - add [rbx+000000C8],edx
