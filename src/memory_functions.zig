@@ -25,10 +25,12 @@ pub fn calculateRelativeOffset(memory_address_to: u64, memory_address_from: u64)
     return relative_offset;
 }
 
-// write a portion of custom code to the specified memory address.
+// Writes custom bytes to a memory location in a looping fashion with an index to write a jump inbetween.
 // ensure that this memory has been allocated, and / or read / write / execute permissions have been set.
 // returns the index of the array to be used later in jumps.
-pub fn writeCustomCodeToMemory(memory_address_to_write: u64, custom_bytes: []const u8) u8 {
+// This is used for use in conditional custom code where jmp needs to be added in the middle.
+// If null, will ignore the jmp index check  
+pub fn loopWriteCodeToMemory(memory_address_to_write: u64, custom_bytes: []const u8, index_to_write_jump: ?u8) u8 {
     // Getting a pointer to the location in memory to write to.
     const ptr_to_writable_memory: [*]u8 = @ptrFromInt(memory_address_to_write);
     var index: u8 = 0;
@@ -36,6 +38,11 @@ pub fn writeCustomCodeToMemory(memory_address_to_write: u64, custom_bytes: []con
     for (custom_bytes) |byte| {
         ptr_to_writable_memory[index] = byte;
         index += 1;
+
+        // Checking to see if the index lines up with index_to_write_jump
+        if (index == index_to_write_jump) {
+
+        }
     }
 
     std.log.debug("writeCustomCodeToMemory: index count = {d}\n", .{index});
