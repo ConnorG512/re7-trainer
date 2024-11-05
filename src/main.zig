@@ -8,9 +8,19 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
             _ = winapi.AllocConsole();
             // Inject
             // infinite scrap
-            cheat.infinite_scrap.startInjection();
+            cheat.infinite_scrap.storeBaseAddress();
+            cheat.infinite_scrap.allocateVirtualMemory();
+            cheat.infinite_scrap.byteProtection();
+            cheat.infinite_scrap.writeBytes();
+
             // Infinite ammo clip
-            cheat.infinite_ammo_clip.startInjection();
+            cheat.infinite_ammo_clip.storeBaseAddress();
+            cheat.infinite_ammo_clip.allocateVirtualMemory();
+            cheat.infinite_ammo_clip.byteProtection();
+            cheat.infinite_ammo_clip.writeBytes();
+
+            // Infinite health
+            
 
             return winapi.WIN_TRUE;
         },
