@@ -20,7 +20,9 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
             cheat.infinite_ammo_clip.writeBytes();
 
             // Infinite health
-            
+            cheat.infinite_hp.storeBaseAddress();
+            cheat.infinite_hp.allocateVirtualMemory();
+            cheat.infinite_ammo_clip.byteProtection();
 
             return winapi.WIN_TRUE;
         },
