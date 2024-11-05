@@ -10,6 +10,7 @@ pub const CheatTemplate = struct {
     virtualAllocateByteSize: u8,
     originalBytes: []const u8, // Slices of any size
     newBytes: []const u8, // Slices of any size
+    newBytes2: []const u8,
     prevProtectionValue: u32,
 
     pub fn storeBaseAddress(self: *CheatTemplate) void {
@@ -59,6 +60,7 @@ pub var infinite_scrap = CheatTemplate{
     .virtualAllocateByteSize = 16,
     .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C, 0x48 }, // Original bytes for if the bytes need to be reverted
     .newBytes = &[_]u8{ 0xC7, 0x46, 0x6C, 0x9F, 0x86, 0x01, 0x00, 0x48, 0x85, 0xDB }, // New code to modify the executable state ending with an e9 jump to add the address on the end
+    .newBytes2 = &[_]u8{ 0x00 } // Extra array for bytes if a jump needs to be added in between.
 };
 
 pub var infinite_ammo_clip = CheatTemplate{
@@ -70,6 +72,7 @@ pub var infinite_ammo_clip = CheatTemplate{
     .virtualAllocateByteSize = 17,
     .originalBytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C, 0x48 }, // Original bytes for if the bytes need to be reverted
     .newBytes = &[_]u8{ 0x66, 0xc7, 0x43, 0x14, 0x63, 0x00, 0x48, 0x8B, 0x5C, 0x24, 0x30 }, // New code to modify the executable state ending with an e9 jump to add the address on the end
+    .newBytes2 = &[_]u8{ 0x00 } // Extra array for bytes if a jump needs to be added in between.
 };
 
 pub var infinite_hp = CheatTemplate{
@@ -81,4 +84,5 @@ pub var infinite_hp = CheatTemplate{
     .virtualAllocateByteSize = 40,
     .originalBytes = &[_]u8{ 0xF3, 0x0F, 0x11, 0x52, 0x14 }, // Original bytes for if the bytes need to be reverted
     .newBytes = &[_]u8{}, // New code to modify the executable state ending with an e9 jump to add the address on the end
+    .newBytes2 = &[_]u8{} // Extra array for bytes if a jump needs to be added in between.
 };
