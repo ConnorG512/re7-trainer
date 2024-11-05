@@ -51,6 +51,17 @@ pub const CheatTemplate = struct {
         var index: u8 = 0;
         var relative_offset: i64 = 0x0;
 
+        relative_offset = mf.calculateRelativeOffset(self.*.virtualAllocateAddress, self.*.baseAddress + self.*.offsetToPatch);
+        mf.writeJmpToMemoryAddress(@ptrFromInt(self.*.baseAddress + self.*.offsetToPatch), relative_offset);
+
+        // Write the first set of bytes to the virtual alloc address. Store the index.
+        index = mf.writeCustomCodeToMemory(self.*.virtualAllocateAddress, self.*.newBytes);
+        relative_offset = mf.calculateRelativeOffset(self.*.baseAddress + self.*.offsetToJumpBack, self.*.virtualAllocateAddress + index);
+        
+        // Adding five to the index to cover the jmp as we need to write more bytes after.
+        index + 5;
+        mf.writeCustomCodeToMemory(@ptrFromInt(self.*.baseAddress + self.*.offsetToPatch + index), self.*.newBytes2);
+        relative_offset = mf.calculateRelativeOffset(self.*.baseAddress + self.*.offsetToJumpBack, self.*.virtualAllocateAddress + index);
     }
 };
 
