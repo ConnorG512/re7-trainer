@@ -29,8 +29,9 @@ pub fn calculateRelativeOffset(memory_address_to: u64, memory_address_from: u64)
 // ensure that this memory has been allocated, and / or read / write / execute permissions have been set.
 // returns the index of the array to be used later in jumps.
 // This is used for use in conditional custom code where jmp needs to be added in the middle.
-// If null, will ignore the jmp index check  
-pub fn loopWriteCodeToMemory(memory_address_to_write: u64, custom_bytes: []const u8, index_to_write_jump: ?u8) u8 {
+// If null, will ignore the jmp index check
+// if not writing a jmp mid instruction, relative_offset can be set to null.
+pub fn loopWriteCodeToMemory(memory_address_to_write: u64, custom_bytes: []const u8, index_to_write_jump: ?u8, relative_offset: ?i64) u8 {
     // Getting a pointer to the location in memory to write to.
     const ptr_to_writable_memory: [*]u8 = @ptrFromInt(memory_address_to_write);
     var index: u8 = 0;
@@ -39,9 +40,10 @@ pub fn loopWriteCodeToMemory(memory_address_to_write: u64, custom_bytes: []const
         ptr_to_writable_memory[index] = byte;
         index += 1;
 
-        // Checking to see if the index lines up with index_to_write_jump
+        // check to see if index_to_write_jump is not null and matches the correct value specified
         if (index == index_to_write_jump) {
-
+            writeJmpToMemoryAddress(ptr_to_writable_memory + index, relative_offset);
+            index += 5;
         }
     }
 
