@@ -3,6 +3,7 @@ const std = @import("std");
 const mf = @import("memory_functions.zig");
 
 pub const CheatTemplate = struct {
+    cheat_title: []const u8, // Title of the cheat
     baseAddress: u64, // Base address for the application
     offsetToPatch: u64, // Pointer to a unsigned 64 bit address
     offsetToJumpBack: u64, // Offset to jump back to from custom code
@@ -14,7 +15,7 @@ pub const CheatTemplate = struct {
     prevProtectionValue: u32,
 
     pub fn printInfo(self: *CheatTemplate) void {
-
+        std.debug.print("Cheat Title: {s}\n", .{self.*.cheat_title});
     }
 
     pub fn storeBaseAddress(self: *CheatTemplate) void {
@@ -72,6 +73,7 @@ pub const CheatTemplate = struct {
 // INSTANCE
 ///////////////////////////////////
 pub var infinite_scrap = CheatTemplate{
+    .cheat_title = "INFINITE SCRAP",
     .baseAddress = 0x0,
     .offsetToPatch = 0x0000000001d80673,
     .offsetToJumpBack = 0x1d8067a,
@@ -84,6 +86,7 @@ pub var infinite_scrap = CheatTemplate{
 };
 
 pub var infinite_ammo_clip = CheatTemplate{
+    .cheat_title = "INFINITE AMMO CLIP",
     .baseAddress = 0x0,
     .offsetToPatch = 0x0000000001945FF7,
     .offsetToJumpBack = 0x1945FFF,
@@ -96,6 +99,7 @@ pub var infinite_ammo_clip = CheatTemplate{
 };
 
 pub var infinite_hp = CheatTemplate{
+    .cheat_title = "INFINITE HEALTH",
     .baseAddress = 0x0,
     .offsetToPatch = 0x0000000001B815EF,
     .offsetToJumpBack = 0x1B815F4,
