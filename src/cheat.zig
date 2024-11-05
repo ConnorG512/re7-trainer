@@ -44,7 +44,7 @@ pub const CheatTemplate = struct {
         mf.writeJmpToMemoryAddress(@ptrFromInt(self.*.baseAddress + self.offsetToPatch), relative_offset);
 
         // This code with write the custom instruction from self.newbytes into the allocated memory space
-        index = mf.loopWriteCodeToMemory(self.*.virtualAllocateAddress, self.*.newBytes, null);
+        index = mf.loopWriteCodeToMemory(self.*.virtualAllocateAddress, self.*.newBytes, null, null);
 
         // Writing the jump back to the original code
         relative_offset = mf.calculateRelativeOffset(self.*.baseAddress + self.*.offsetToJumpBack, self.*.virtualAllocateAddress + index);

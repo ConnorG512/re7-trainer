@@ -5,17 +5,6 @@ const memError = error {
     outOfAllocRange,
 };
 
-// Write the jump instruction along with the offset to the specified memory address.
-pub fn writeJmpToMemoryAddress(memory_address: *[5]u8, value_to_write: i64) void {
-    memory_address[0] = 0xE9; // Relative jmp opcode
-    memory_address[1] = @intCast(value_to_write & 0xFF);
-    memory_address[2] = @intCast((value_to_write >> 8) & 0xFF);
-    memory_address[3] = @intCast((value_to_write >> 16) & 0xFF);
-    memory_address[4] = @intCast((value_to_write >> 24) & 0xFF);
-
-    std.log.debug("writeJmpToMemoryAddress: memory_address = {X}\n", .{memory_address});
-}
-
 // Calculates the relative offset used with the relative jmp instruction.
 // This is required for jumping to and away from custom code
 pub fn calculateRelativeOffset(memory_address_to: u64, memory_address_from: u64) i64 {
@@ -31,7 +20,7 @@ pub fn calculateRelativeOffset(memory_address_to: u64, memory_address_from: u64)
 // This is used for use in conditional custom code where jmp needs to be added in the middle.
 // If null, will ignore the jmp index check
 // if not writing a jmp mid instruction, relative_offset can be set to null.
-pub fn loopWriteCodeToMemory(memory_address_to_write: u64, custom_bytes: []const u8, index_to_write_jump: ?u8, relative_offset: ?i64) u8 {
+pub fn loopWriteCodeToMemory(memory_address_to_write: u64, custom_bytes: []const u8, index_to_write_jump: ?usize, relative_offset: i64) u8 {
     // Getting a pointer to the location in memory to write to.
     const ptr_to_writable_memory: [*]u8 = @ptrFromInt(memory_address_to_write);
     var index: u8 = 0;
@@ -42,13 +31,26 @@ pub fn loopWriteCodeToMemory(memory_address_to_write: u64, custom_bytes: []const
 
         // check to see if index_to_write_jump is not null and matches the correct value specified
         if (index == index_to_write_jump) {
-            writeJmpToMemoryAddress(ptr_to_writable_memory + index, relative_offset);
+            const area_to_write_jump: *[5]u8 = ptr_to_writable_memory[index_to_write_jump.?];
+            writeJmpToMemoryAddress(area_to_write_jump, relative_offset);
             index += 5;
         }
     }
 
+    writeJmpToMemoryAddress(ptr_to_writable_memory + index, relative_offset);
     std.log.debug("writeCustomCodeToMemory: index count = {d}\n", .{index});
     return index;
+}
+
+// Write the jump instruction along with the offset to the specified memory address.
+fn writeJmpToMemoryAddress(memory_address: [*]u8, value_to_write: i64) void {
+    memory_address[0] = 0xE9; // Relative jmp opcode
+    memory_address[1] = @intCast(value_to_write & 0xFF);
+    memory_address[2] = @intCast((value_to_write >> 8) & 0xFF);
+    memory_address[3] = @intCast((value_to_write >> 16) & 0xFF);
+    memory_address[4] = @intCast((value_to_write >> 24) & 0xFF);
+
+    std.log.debug("writeJmpToMemoryAddress: memory_address = {X}\n", .{memory_address});
 }
 
 // Scans for free memory within a 32 bit integer size of the provided address.
