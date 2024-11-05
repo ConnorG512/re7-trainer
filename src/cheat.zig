@@ -6,13 +6,13 @@ pub const CheatTemplate = struct {
     cheat_title: []const u8, // Title of the cheat
     baseAddress: u64, // Base address for the application
     offsetToPatch: u64, // Pointer to a unsigned 64 bit address
-    offsetToJumpBack: u64, // Offset to jump back to from custom code
+    offset_to_jump_back: u64, // Offset to jump back to from custom code
     relative_offset: i64, // Calculation of a relative offset 
     virtualAllocateAddress: u64,
     virtualAllocateByteSize: u8,
     originalBytes: []const u8, // Slices of any size
     newBytes: []const u8, // Slices of any size
-    index_to_write_jmp: u8,
+    index_to_write_jmp: ?u8,
     prevProtectionValue: u32,
 
     pub fn printInfo(self: *CheatTemplate) void {
@@ -49,7 +49,7 @@ pub var infinite_scrap = CheatTemplate{
     .cheat_title = "INFINITE SCRAP",
     .baseAddress = 0x0,
     .offsetToPatch = 0x0000000001d80673,
-    .offsetToJumpBack = 0x1d8067a,
+    .offset_to_jump_back =  0x1d8067a,
     .prevProtectionValue = 0x0,
     .relative_offset = 0x0,
     .virtualAllocateAddress = 0x0,
@@ -63,7 +63,7 @@ pub var infinite_ammo_clip = CheatTemplate{
     .cheat_title = "INFINITE AMMO CLIP",
     .baseAddress = 0x0,
     .offsetToPatch = 0x0000000001945FF7,
-    .offsetToJumpBack = 0x1945FFF,
+    .offset_to_jump_back = 0x1945FFF,
     .prevProtectionValue = 0x0,
     .relative_offset = 0x0,
     .virtualAllocateAddress = 0x0,
@@ -77,7 +77,7 @@ pub var infinite_hp = CheatTemplate{
     .cheat_title = "INFINITE HEALTH",
     .baseAddress = 0x0,
     .offsetToPatch = 0x0000000001B815EF,
-    .offsetToJumpBack = 0x1B815F4,
+    .offset_to_jump_back = 0x1B815F4,
     .prevProtectionValue = 0x0,
     .relative_offset = 0x0,
     .virtualAllocateAddress = 0x0,
