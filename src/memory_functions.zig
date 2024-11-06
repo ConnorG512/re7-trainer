@@ -50,6 +50,23 @@ pub fn writeAndJump(address_to_jump_to: u64, address_to_jump_from: u64) void {
     std.debug.print("writeAndJump: relative_offset = {X}\n", .{relative_offset});
 }
 
+
+// If a single line is required to be written over with no jumping, then use this function
+pub fn singleInstructionReplace (address_to_write_to: u64, bytes_to_write: []const u8) void {
+    const ptr_address_to_write_to: [*]u8 = @ptrFromInt(address_to_write_to);
+    var index: u8 = 0;
+
+    for (bytes_to_write) |byte| {
+        ptr_address_to_write_to[index] = byte;
+
+        index += 1;
+    }
+
+    std.log.debug("singleInstructionReplace: index = {*}\n", .{ptr_address_to_write_to});
+    std.log.debug("singleInstructionReplace: index = {d}\n", .{index});
+}
+
+
 // Scans for free memory within a 32 bit integer size of the provided address.
 // If memory is found, will reserve that memory and allocate a number of bytes based on the size of the custom code provided.
 // Returns the pointer of the allocated memory casted as a u64 value.

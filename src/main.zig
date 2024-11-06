@@ -28,6 +28,12 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
             cheat.infinite_hp.byteProtection();
             cheat.infinite_hp.doubleWriteBytes();
 
+            // X-Ray
+            std.debug.print("{s}", .{cheat.x_ray.cheat_title});
+            cheat.x_ray.storeBaseAddress();
+            cheat.x_ray.byteProtection();
+            cheat.x_ray.singleLineWrite();
+
             return winapi.WIN_TRUE;
         },
         2 => { // DLL_THREAD_ATTACH

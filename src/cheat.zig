@@ -56,6 +56,10 @@ pub const CheatTemplate = struct {
         mf.writeAndJump(self.*.base_address + self.offset_to_jump_back, offset_to_place_jump);
     }
 
+    pub fn singleLineWrite(self: *CheatTemplate) void {
+        mf.singleInstructionReplace(self.*.base_address + self.*.offset_to_patch, self.*.new_bytes);
+    }
+
 };
 
 ///////////////////////////////////
@@ -105,4 +109,18 @@ pub var infinite_hp = CheatTemplate{
                                     0xF3, 0x0F, 0x11, 0x52, 0x14,               // movss DWORD PTR [rdx + 0x14], xmm2
                                     },                                          // New code to modify the executable state ending with an e9 jump to add the address on the end
     .new_bytes2 = &[_]u8 {0xF3, 0x0F, 0x11, 0x52, 0x14}             // movss DWORD PTR [rdx + 0x14], xmm2
+};
+
+pub var x_ray = CheatTemplate{
+    .cheat_title = "X-RAY\n",
+    .base_address = 0x0,
+    .offset_to_patch = 0x000000000A33597,
+    .offset_to_jump_back = 0x0,
+    .prev_protection_value = 0x0,
+    .relative_offset = 0x0,
+    .virtual_allocate_address = 0x0,
+    .virtual_allocate_byte_size = 0,
+    .original_bytes = &[_]u8{ 0xC6, 0x82, 0x70, 0x02, 0x00, 0x00, 0x00 },                     // Original bytes for if the bytes need to be reverted
+    .new_bytes = &[_]u8{ 0xC6, 0x82, 0x70, 0x02, 0x00, 0x00, 0x01 },                          // Bytes to replace the old bytes 1 to 1 
+    .new_bytes2 = &[_]u8{0x00},
 };
