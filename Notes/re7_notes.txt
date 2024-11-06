@@ -50,3 +50,8 @@ edx is the amount of scrap in the machine
 re7.exe+20AF6E8 - 01 93 C8000000        - add [rbx+000000C8],edx
 re7.exe+20AF6EE - 0F57 C0               - xorps xmm0,xmm0
 re7.exe+20AF6F1 - B0 01                 - mov al,01
+
+moves the cursor horiz/vert in the inventory menu:
+re7.exe+CAAFCF - 0F11 42 10            - movups [rdx+10],xmm0
+re7.exe+CAAFD3 - 45 84 C9              - test r9b,r9b
+re7.exe+CAAFD6 - 0F85 C9000000         - jne re7.exe+CAB0A5
