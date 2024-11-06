@@ -7,8 +7,26 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
         1 => { // DLL_PROCESS_ATTACH
             _ = winapi.AllocConsole();
             // Inject
-            cheat.infinite_scrap.startInjection();
-            cheat.infinite_ammo_clip.startInjection();
+            // infinite scrap
+            std.debug.print("{s}", .{cheat.infinite_scrap.cheat_title});
+            cheat.infinite_scrap.storeBaseAddress();
+            cheat.infinite_scrap.allocateVirtualMemory();
+            cheat.infinite_scrap.byteProtection();
+            cheat.infinite_scrap.writeBytes();
+
+            // Infinite ammo clip
+            std.debug.print("{s}", .{cheat.infinite_ammo_clip.cheat_title});
+            cheat.infinite_ammo_clip.storeBaseAddress();
+            cheat.infinite_ammo_clip.allocateVirtualMemory();
+            cheat.infinite_ammo_clip.byteProtection();
+            cheat.infinite_ammo_clip.writeBytes();
+
+            // Infinite health
+            std.debug.print("{s}", .{cheat.infinite_hp.cheat_title});
+            cheat.infinite_hp.storeBaseAddress();
+            cheat.infinite_hp.allocateVirtualMemory();
+            cheat.infinite_hp.byteProtection();
+            cheat.infinite_hp.doubleWriteBytes();
 
             return winapi.WIN_TRUE;
         },
