@@ -11,4 +11,4 @@ Current patches:
   - Infinite Scrap (DLC Nightmare minigame)
   - Infinite ammo clip
   - infinite health
-
+  - X Ray Item Vision
