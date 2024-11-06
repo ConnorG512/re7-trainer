@@ -45,9 +45,9 @@ pub fn writeAndJump(address_to_jump_to: u64, address_to_jump_from: u64) void {
     ptr_address_to_jump_from[3] = @intCast((relative_offset >> 16) & 0xFF);
     ptr_address_to_jump_from[4] = @intCast((relative_offset >> 24) & 0xFF);
     
-    std.log.debug("writeAndJump: ptr_address_to_jump_from = {*}\n", .{ptr_address_to_jump_from});
-    std.log.debug("writeAndJump: ptr_address_to_jump_to = {X}\n", .{address_to_jump_to});
-    std.log.debug("writeAndJump: relative_offset = {X}\n", .{relative_offset});
+    std.debug.print("writeAndJump: ptr_address_to_jump_from = {*}\n", .{ptr_address_to_jump_from});
+    std.debug.print("writeAndJump: ptr_address_to_jump_to = {X}\n", .{address_to_jump_to});
+    std.debug.print("writeAndJump: relative_offset = {X}\n", .{relative_offset});
 }
 
 // Scans for free memory within a 32 bit integer size of the provided address.
