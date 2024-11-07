@@ -62,4 +62,6 @@ re7.exe+A33714 - C6 83 70020000 01     - mov byte ptr [rbx+00000270],01
 When set to 1 with the glasses not in invenotry, item in world will show
 re7.exe+A33597 - C6 82 70020000 00     - mov byte ptr [rdx+00000270],00
 
+Location instruction?
+re7.exe+2C5E720 - F3 41 0F11 AD 88010000  - movss [r13+00000188],xmm5
 
