@@ -7,11 +7,11 @@ pub const CheatWriter = struct {
 
     custom_bytes: []const u8,
 
-    pub fn writeBytesToMemory(self: *CheatWriter) void {
+    pub fn writeBytesToMemory(self: *CheatWriter, bytes_to_write: []const u8) void {
         const ptr_to_memory: [*]u8 = @ptrFromInt(self.cheat_base_struct.process_base_id.? + self.cheat_base_struct.offset_to_patch);
 
         var index: u8 = 0;
-        for (self.custom_bytes) |byte| {
+        for (bytes_to_write) |byte| {
             ptr_to_memory[index] = byte;
 
             index += 1;
