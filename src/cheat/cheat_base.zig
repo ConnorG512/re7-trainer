@@ -25,7 +25,7 @@ pub const CheatBase = struct {
         };
     }
 
-    fn printCheatInfo(self: *CheatBase) void {
+    pub fn printCheatInfo(self: *CheatBase) void {
         std.debug.print("Cheat: {s}, enabled? {}\n.", .{ self.cheat_name, self.cheat_enabled });
     }
 
