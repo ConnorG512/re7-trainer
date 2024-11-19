@@ -17,6 +17,6 @@ pub const CheatWriter = struct {
             index += 1;
         }
 
-        std.debug.print("SUCCESS: (writeBytesToMemory), total bytes writtedm: {d}.\n", .{index});
+        std.debug.print("SUCCESS: (writeBytesToMemory), total bytes written: {d}.\n", .{index});
     }
 };
