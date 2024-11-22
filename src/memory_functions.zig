@@ -1,7 +1,7 @@
 const std = @import("std");
 const winapi = @import("winapi.zig");
 
-const memError = error {
+const memError = error{
     outOfAllocRange,
 };
 
@@ -33,7 +33,7 @@ pub fn WriteCodeToMemory(memory_location: u64, custom_bytes: []const u8) u64 {
 }
 
 // Calculate the relative offset from the two provided addresses to the function
-// Write the result to memory to create the jump. 
+// Write the result to memory to create the jump.
 pub fn writeAndJump(address_to_jump_to: u64, address_to_jump_from: u64) void {
     const relative_offset: i64 = @bitCast(address_to_jump_to -% (address_to_jump_from + 5));
 
@@ -44,15 +44,14 @@ pub fn writeAndJump(address_to_jump_to: u64, address_to_jump_from: u64) void {
     ptr_address_to_jump_from[2] = @intCast((relative_offset >> 8) & 0xFF);
     ptr_address_to_jump_from[3] = @intCast((relative_offset >> 16) & 0xFF);
     ptr_address_to_jump_from[4] = @intCast((relative_offset >> 24) & 0xFF);
-    
+
     std.debug.print("writeAndJump: ptr_address_to_jump_from = {*}\n", .{ptr_address_to_jump_from});
     std.debug.print("writeAndJump: ptr_address_to_jump_to = {X}\n", .{address_to_jump_to});
     std.debug.print("writeAndJump: relative_offset = {X}\n", .{relative_offset});
 }
 
-
 // If a single line is required to be written over with no jumping, then use this function
-pub fn singleInstructionReplace (address_to_write_to: u64, bytes_to_write: []const u8) void {
+pub fn singleInstructionReplace(address_to_write_to: u64, bytes_to_write: []const u8) void {
     const ptr_address_to_write_to: [*]u8 = @ptrFromInt(address_to_write_to);
     var index: u8 = 0;
 
@@ -65,7 +64,6 @@ pub fn singleInstructionReplace (address_to_write_to: u64, bytes_to_write: []con
     std.log.debug("singleInstructionReplace: index = {*}\n", .{ptr_address_to_write_to});
     std.log.debug("singleInstructionReplace: index = {d}\n", .{index});
 }
-
 
 // Scans for free memory within a 32 bit integer size of the provided address.
 // If memory is found, will reserve that memory and allocate a number of bytes based on the size of the custom code provided.
@@ -81,7 +79,6 @@ pub fn VMScanAllocate(initial_memory_address: u64, jump_size: u16, allocation_by
 
         virtual_alloc_result = winapi.VirtualAlloc(@ptrFromInt(address_to_scan), allocation_byte_size, winapi.MEM_RESERVE, winapi.PAGE_EXECUTE_READWRITE);
         ptr_allocation_jump_distance.* += jump_size;
-
     }
 
     if (allocation_jump_distance >= allocation_jump_size) {
@@ -95,7 +92,7 @@ pub fn VMScanAllocate(initial_memory_address: u64, jump_size: u16, allocation_by
 }
 
 // Call VirtualProtect on a piece of memory and get the result, if failed call GetLastError for debugging.
-pub fn byteProtection (memory_address: u64, previous_protection_value_store: ?*u32) void {
+pub fn byteProtection(memory_address: u64, previous_protection_value_store: ?*u32) void {
     const virtual_protect_result: winapi.BOOL = winapi.VirtualProtect(@ptrFromInt(memory_address), 4, winapi.PAGE_EXECUTE_READWRITE, previous_protection_value_store);
 
     if (virtual_protect_result == 0) {
