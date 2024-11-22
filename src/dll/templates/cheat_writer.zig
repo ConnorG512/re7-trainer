@@ -7,7 +7,7 @@ pub const CheatWrite = struct {
     ModInfo: ModInfo,
     ModWrite: ModWrite,
 
-    pub fn initialiseCheat(self: *CheatWrite) void {
+    pub fn initializeCheat(self: *CheatWrite) void {
         self.ModInfo.printCheatStatus();
         self.ModInfo.getProcessID() catch |err| {
             std.debug.print("ERROR: cannot get process ID! {}\n", .{err});

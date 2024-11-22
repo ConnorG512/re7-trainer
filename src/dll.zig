@@ -7,8 +7,8 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
         1 => { // DLL_PROCESS_ATTACH
             _ = winapi.AllocConsole();
             
-            CheatInstance.xray.initialiseCheat();
-            CheatInstance.infinite_clip.initialiseCheat();
+            CheatInstance.xray.initializeCheat();
+            CheatInstance.infinite_clip.initializeCheat();
             return winapi.WIN_TRUE;
         },
         2 => { // DLL_THREAD_ATTACH
