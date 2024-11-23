@@ -1,5 +1,6 @@
 const WriterTemp = @import("templates/cheat_writer.zig").CheatWrite;
 const WriterJumpTemp = @import("templates/cheat_writer_jumper.zig").CheatWriterJumper;
+const WriterJumpDoubleTemp = @import("templates/cheat_writer_jumper_double.zig").CheatWriterJumperDouble;
 
 pub var xray = WriterTemp { 
     .ModInfo = .{
@@ -22,7 +23,7 @@ pub var infinite_clip = WriterJumpTemp {
         .base_process_ID = undefined,
     },
     .ModWrite = .{ 
-        .custom_bytes = &[_]u8{ 0x44, 0x89, 0x7E, 0x6C, 0x48 },
+        .custom_bytes = undefined,
         .previous_protection_value = undefined,
     },
     .ModAlloc = .{
@@ -32,4 +33,31 @@ pub var infinite_clip = WriterJumpTemp {
         .allocation_jump_interval_len = 4096 * 4,
         .offset_return_back_to = 0x1945FFF,
     },
+};
+
+pub var infinite_health = WriterJumpDoubleTemp {
+    .ModInfo = .{
+        .cheat_title = "INFINITE HEALTH",
+        .cheat_enabled = true,
+        .offset_to_patch = 0x1B815EF,
+        .base_process_ID = undefined,
+    },
+    .ModWrite = .{ 
+        .custom_bytes = undefined,
+        .previous_protection_value = undefined,
+    },
+    .ModAlloc = .{
+        .custom_alloc_bytes = &[_]u8{
+        0x83, 0xBA, 0xC8, 0x00, 0x00, 0x00, 0x00, // cmp DWORD PTR [rdx + 0xc8], 0
+        0x75, 0x0F, // jne 0x18
+        0xF3, 0x0F, 0x10, 0x52, 0x10, // movss xmm2, DWORD PTR [rdx + 0x10]
+        0xF3, 0x0F, 0x11, 0x52, 0x14, // movss DWORD PTR [rdx + 0x14], xmm2
+        }, // New code to modify the executable state ending with an e9 jump to add the address on the end
+
+        .allocation_byte_size = 40,
+        .allocated_memory_base_address = undefined,
+        .allocation_jump_interval_len = 4096 * 4,
+        .offset_return_back_to = 0x1B815F4,
+    },
+    .second_custom_alloc_bytes = &[_]u8{ 0xF3, 0x0F, 0x11, 0x52, 0x14 }, // movss DWORD PTR [rdx + 0x14], xmm2
 };
