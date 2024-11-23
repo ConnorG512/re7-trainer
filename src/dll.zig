@@ -10,6 +10,8 @@ pub export fn DllMain(_: ?winapi.HINSTANCE, fdwReason: winapi.DWORD, _: ?winapi.
             CheatInstance.xray.initializeCheat();
             CheatInstance.infinite_clip.initializeCheat();
             CheatInstance.infinite_health.initializeCheat();
+            CheatInstance.infinite_scrap.initializeCheat();
+            
             return winapi.WIN_TRUE;
         },
         2 => { // DLL_THREAD_ATTACH
