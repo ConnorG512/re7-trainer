@@ -11,29 +11,24 @@ pub fn writeBytesToAddress(memory_address: u64, bytes_to_write: []u8) u8 {
     return index;
 }
 
-pub fn calculateAndStoreRelativeOffset(memory_address_to: u64, memory_address_from: u64) []u8 {
+pub fn calculateAndStoreRelativeOffset(memory_address_to: u64, memory_address_from: u64, jump_bytes: []u8) void {
     const relative_offset = calculateRelativeOffset(memory_address_to, memory_address_from);
-    const jump_bytes = storeRelativeOffset(relative_offset);
-    return jump_bytes;
+
+    storeRelativeOffset(relative_offset, jump_bytes);
+    std.debug.print("jump_bytes_array: (calculateAndStoreRelativeOffset) {X}\n", .{jump_bytes});
+
 }
 
 fn calculateRelativeOffset(memory_address_to: u64, memory_address_from: u64) i64 {
     const relative_offset: i64 = @bitCast(memory_address_to -% (memory_address_from + 5));
-    std.log.debug("calculateRelativeOffset: relative_offset = {X}\n", .{relative_offset});
-
     return relative_offset;
 }
 
-fn storeRelativeOffset(relative_offset: i64) []u8 {
-    var stored_bytes: [5]u8 = [5]u8{0x1, 0x2, 0x3, 0x4, 0x5};
+fn storeRelativeOffset(relative_offset: i64, jump_bytes: []u8) void {
+    jump_bytes[0] = 0xE9;
+    jump_bytes[1] = @intCast(relative_offset & 0xFF);
+    jump_bytes[2] = @intCast((relative_offset >> 8) & 0xFF);
+    jump_bytes[3] = @intCast((relative_offset >> 16) & 0xFF);
+    jump_bytes[4] = @intCast((relative_offset >> 24) & 0xFF);
 
-    stored_bytes[0] = 0xE9;
-    stored_bytes[1] = @intCast(relative_offset & 0xFF);
-    stored_bytes[2] = @intCast((relative_offset >> 8) & 0xFF);
-    stored_bytes[3] = @intCast((relative_offset >> 16) & 0xFF);
-    stored_bytes[4] = @intCast((relative_offset >> 24) & 0xFF);
-    
-    std.log.debug("(storeRelativeOffset) Decimal {d}.\n", .{stored_bytes});
-    std.log.debug("(storeRelativeOffset) Hex {X}.\n", .{stored_bytes});
-    return &stored_bytes;
 }
