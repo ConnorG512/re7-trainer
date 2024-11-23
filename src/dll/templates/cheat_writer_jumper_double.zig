@@ -23,6 +23,7 @@ pub const CheatWriterJumperDouble = struct {
         };
         self.writingToAllocatedMemroy();
         self.writingJumpToAllocatedCode();
+        std.debug.print("\n", .{});
     }
 
     fn writingToAllocatedMemroy(self: *CheatWriterJumperDouble) void {

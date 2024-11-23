@@ -18,6 +18,6 @@ pub const CheatWrite = struct {
         };
 
         _ = MemUntil.writeBytesToAddress(self.ModInfo.base_process_ID.? + self.ModInfo.offset_to_patch, @constCast(self.ModWrite.custom_bytes));
-        std.debug.print("---\n", .{});
+        std.debug.print("\n", .{});
     }   
 };

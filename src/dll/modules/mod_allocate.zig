@@ -38,7 +38,7 @@ pub const ModAllocate = struct {
             GLE = winapi.GetLastError();
             std.debug.print("ERROR: Windows GLE = {X}/{d}\n", .{GLE,GLE});
         }
-        std.log.debug("SUCCESS: (scanAndAllocateAddress) result: 0x{any}\n", .{virtual_alloc_result});
+        std.debug.print("SUCCESS: (scanAndAllocateAddress) result: 0x{any}\n", .{virtual_alloc_result});
         self.allocated_memory_base_address = @intFromPtr(virtual_alloc_result);
     }
 };

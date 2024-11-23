@@ -17,6 +17,6 @@ pub const ModWrite = struct {
         }
         // Success
         std.log.debug("SUCCESS: (changeMemoryProtections) virt_prot_result={X}\n", .{virt_prot_result});
-        std.log.debug("Changing protections at address 0x{X}.\n", .{memory_address});
+        std.debug.print("Changing protections at address 0x{X}.\n", .{memory_address});
     }
 };
