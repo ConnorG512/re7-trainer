@@ -35,6 +35,26 @@ pub var infinite_clip = WriterJumpTemp {
     },
 };
 
+pub var infinite_scrap = WriterJumpTemp {
+    .ModInfo = .{
+        .cheat_title = "INFINITE SCRAP",
+        .cheat_enabled = true,
+        .offset_to_patch = 0x1D80673,
+        .base_process_ID = undefined,
+    },
+    .ModWrite = .{ 
+        .custom_bytes = undefined,
+        .previous_protection_value = undefined,
+    },
+    .ModAlloc = .{
+        .custom_alloc_bytes = &[_]u8{ 0xC7, 0x46, 0x6C, 0x9F, 0x86, 0x01, 0x00, 0x48, 0x85, 0xDB },
+        .allocation_byte_size = 20,
+        .allocated_memory_base_address = undefined,
+        .allocation_jump_interval_len = 4096 * 4,
+        .offset_return_back_to = 0x1D8067A,
+    },
+};
+
 pub var infinite_health = WriterJumpDoubleTemp {
     .ModInfo = .{
         .cheat_title = "INFINITE HEALTH",
