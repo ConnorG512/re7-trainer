@@ -40,8 +40,7 @@ pub const CheatWriterJumperDouble = struct {
         jump_bytes = MemUtil.calculateAndStoreRelativeOffset(self.ModInfo.base_process_ID.? + self.ModAlloc.offset_return_back_to, self.ModAlloc.allocated_memory_base_address + index);
         index += MemUtil.writeBytesToAddress(self.ModAlloc.allocated_memory_base_address + index, jump_bytes);
 
-        // Adding 5 to the index for number relative jump back to code.
-        // index += 5;
+        // Writing second portion of custom code.
         index += MemUtil.writeBytesToAddress(self.ModAlloc.allocated_memory_base_address + index, @constCast(self.second_custom_alloc_bytes));
 
         jump_bytes = MemUtil.calculateAndStoreRelativeOffset(self.ModInfo.base_process_ID.? + self.ModAlloc.offset_return_back_to, self.ModAlloc.allocated_memory_base_address + index);
