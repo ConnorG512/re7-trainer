@@ -34,7 +34,7 @@ pub const CheatWriterJumper = struct {
         
         // Writing custom code to allocated memory
         index = MemUtil.writeBytesToAddress(self.ModAlloc.allocated_memory_base_address, @constCast(self.ModAlloc.custom_alloc_bytes));
-        std.log.debug("Custom bytes printed {d}\n", .{index});
+        std.debug.print("Custom bytes writtedn: {d}\n", .{index});
         
         // Jump to return
         MemUtil.calculateAndStoreRelativeOffset(self.ModInfo.base_process_ID.? + self.ModAlloc.offset_return_back_to, self.ModAlloc.allocated_memory_base_address + index, &jump_bytes);
