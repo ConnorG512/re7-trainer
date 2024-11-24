@@ -11,7 +11,7 @@ pub fn build(b: *std.Build) void {
 
     const lib = b.addSharedLibrary(.{
         .name = "re7_trainer",
-        .root_source_file = b.path("src/main.zig"),
+        .root_source_file = b.path("src/dll.zig"),
         .target = target,
         .optimize = optimize,
     });
